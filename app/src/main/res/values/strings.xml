@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SimpleTaskList</string>
+    <string name="action_add">Add</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_save">Save</string>
+    <string name="title_activity_edit">EditActivity</string>
+    <string name="title_hint_activity_edit">Title</string>
+    <string name="body_hint_activity_edit">Body</string>
+    <string name="updated_activity_edit">Updated: --------</string>
+    <string name="action_settings">Settings</string>
+
+</resources>
