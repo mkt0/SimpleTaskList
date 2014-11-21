@@ -25,18 +25,16 @@ public class MyActivity extends Activity implements LoaderManager.LoaderCallback
         setContentView(R.layout.activity_my);
 
         String[] from = new String[] {
-                MyContract.Memos.COLUMN_TITLE,
-                MyContract.Memos.COLUMN_UPDATED
+                MyContract.Tasks.COLUMN_BODY
         };
 
         int[] to = new int[] {
-                android.R.id.text1,
-                android.R.id.text2
+                android.R.id.text1
         };
 
         adapter = new SimpleCursorAdapter(
                 this,
-                android.R.layout.simple_list_item_2,
+                android.R.layout.simple_list_item_1,
                 null,
                 from,
                 to,
@@ -81,9 +79,8 @@ public class MyActivity extends Activity implements LoaderManager.LoaderCallback
     @Override
     public Loader onCreateLoader(int i, Bundle bundle) {
         String[] projection = new String[] {
-                MyContract.Memos.COLUMN_ID,
-                MyContract.Memos.COLUMN_TITLE,
-                MyContract.Memos.COLUMN_UPDATED
+                MyContract.Tasks.COLUMN_ID,
+                MyContract.Tasks.COLUMN_BODY
         };
 
         return new CursorLoader(this, MyContentProvider.CONTENT_URI, projection, null, null, "updated desc");

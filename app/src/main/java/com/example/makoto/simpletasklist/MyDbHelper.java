@@ -9,8 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class MyDbHelper extends SQLiteOpenHelper {
 
-    public static final String DB_NAME = "my_memo.db";
-    public static final int DB_VERSION = 1;
+    public static final String DB_NAME = "simple_task_list.db";
+    public static final int DB_VERSION = 2;
 
     public MyDbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -18,13 +18,13 @@ public class MyDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL(MyContract.Memos.CREATE_TABLE);
-        sqLiteDatabase.execSQL(MyContract.Memos.INIT_TABLE);
+        sqLiteDatabase.execSQL(MyContract.Tasks.CREATE_TABLE);
+        sqLiteDatabase.execSQL(MyContract.Tasks.INIT_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i2) {
-        sqLiteDatabase.execSQL(MyContract.Memos.DROP_TABLE);
+        sqLiteDatabase.execSQL(MyContract.Tasks.DROP_TABLE);
         onCreate(sqLiteDatabase);
     }
 }

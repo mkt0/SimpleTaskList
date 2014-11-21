@@ -20,11 +20,11 @@ import java.util.Date;
 
 public class EditActivity extends Activity {
 
-    private boolean isNewMemo = true;
-    private long memoId;
-    private EditText myMemoTitle;
-    private EditText myMemoBody;
-    private TextView myMemoUpdated;
+    private boolean isNewTask = true;
+    private long taskId;
+    private EditText myTaskTitle;
+    private EditText myTaskBody;
+    private TextView myTaskUpdated;
     private String title = "";
     private String body = "";
     private String updated = "";
@@ -35,26 +35,25 @@ public class EditActivity extends Activity {
         setContentView(R.layout.activity_edit);
 
         Intent intent = getIntent();
-        memoId = intent.getLongExtra(MyActivity.EXTRA_MY_ID, 0L);
+        taskId = intent.getLongExtra(MyActivity.EXTRA_MY_ID, 0L);
 
-        myMemoTitle = (EditText) findViewById(R.id.myMemoTitle);
-        myMemoBody = (EditText) findViewById(R.id.myMemoBody);
-        myMemoUpdated = (TextView) findViewById(R.id.myMemoUpdated);
+        myTaskTitle = (EditText) findViewById(R.id.myMemoTitle);
+        myTaskBody = (EditText) findViewById(R.id.myMemoBody);
+        myTaskUpdated = (TextView) findViewById(R.id.myMemoUpdated);
 
-        isNewMemo = memoId == 0L ? true : false;
+        isNewTask = taskId == 0L ? true : false;
 
-        if (isNewMemo) {
+        if (isNewTask) {
             getActionBar().setTitle("New Memo");
         } else {
             getActionBar().setTitle("Edit Memo");
-            Uri uri = ContentUris.withAppendedId(MyContentProvider.CONTENT_URI, memoId);
+            Uri uri = ContentUris.withAppendedId(MyContentProvider.CONTENT_URI, taskId);
             String[] projection = new String[] {
-                    MyContract.Memos.COLUMN_TITLE,
-                    MyContract.Memos.COLUMN_BODY,
-                    MyContract.Memos.COLUMN_UPDATED
+                    MyContract.Tasks.COLUMN_BODY,
+                    MyContract.Tasks.COLUMN_UPDATED
             };
-            String selection = MyContract.Memos.COLUMN_ID + " = ?";
-            String[] selectionArgs = new String[] { Long.toString(memoId) };
+            String selection = MyContract.Tasks.COLUMN_ID + " = ?";
+            String[] selectionArgs = new String[] { Long.toString(taskId) };
             Cursor cursor = getContentResolver().query(
                     uri,
                     projection,
@@ -63,14 +62,14 @@ public class EditActivity extends Activity {
                     null
             );
             while (cursor.moveToNext()) {
-                title = cursor.getString(cursor.getColumnIndex(MyContract.Memos.COLUMN_TITLE));
-                body = cursor.getString(cursor.getColumnIndex(MyContract.Memos.COLUMN_BODY));
-                updated ="Updated: " + cursor.getString(cursor.getColumnIndex(MyContract.Memos.COLUMN_UPDATED));
+                title = cursor.getString(cursor.getColumnIndex(MyContract.Tasks.COLUMN_BODY));
+                body = cursor.getString(cursor.getColumnIndex(MyContract.Tasks.COLUMN_BODY));
+                updated ="Updated: " + cursor.getString(cursor.getColumnIndex(MyContract.Tasks.COLUMN_UPDATED));
             }
 
-            myMemoTitle.setText(title);
-            myMemoBody.setText(body);
-            myMemoUpdated.setText(updated);
+            myTaskTitle.setText(title);
+            myTaskBody.setText(body);
+            myTaskUpdated.setText(updated);
         }
     }
 
@@ -78,7 +77,7 @@ public class EditActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.edit, menu);
-        if (isNewMemo) {
+        if (isNewTask) {
             menu.getItem(0).setVisible(false);
         }
         return true;
@@ -97,9 +96,9 @@ public class EditActivity extends Activity {
                 alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Uri deleteUri = ContentUris.withAppendedId(MyContentProvider.CONTENT_URI, memoId);
-                        String selection = MyContract.Memos.COLUMN_ID + " = ?";
-                        String[] selectionArgs = new String[] { Long.toString(memoId) };
+                        Uri deleteUri = ContentUris.withAppendedId(MyContentProvider.CONTENT_URI, taskId);
+                        String selection = MyContract.Tasks.COLUMN_ID + " = ?";
+                        String[] selectionArgs = new String[] { Long.toString(taskId) };
                         getContentResolver().delete(deleteUri, selection, selectionArgs);
 
                         Intent intent = new Intent(EditActivity.this, MyActivity.class);
@@ -110,29 +109,28 @@ public class EditActivity extends Activity {
                 alertDialog.create().show();
                 break;
             case R.id.action_save:
-                title = myMemoTitle.getText().toString().trim();
-                body = myMemoBody.getText().toString().trim();
+                title = myTaskTitle.getText().toString().trim();
+                body = myTaskBody.getText().toString().trim();
                 if (title.equals("")) {
                     Toast toast = Toast.makeText(this,"Title is empty.", Toast.LENGTH_SHORT);
                     toast.show();
                 } else {
                     ContentValues values = new ContentValues();
-                    values.put(MyContract.Memos.COLUMN_TITLE, title);
-                    values.put(MyContract.Memos.COLUMN_BODY, body);
-                    if (isNewMemo) {
+                    values.put(MyContract.Tasks.COLUMN_BODY, body);
+                    if (isNewTask) {
                         // insert
                         getContentResolver().insert(MyContentProvider.CONTENT_URI, values);
                     } else {
                         // update
                         values.put(
-                                MyContract.Memos.COLUMN_UPDATED,
+                                MyContract.Tasks.COLUMN_UPDATED,
                                 android.text.format.DateFormat.format(
                                         "yyyy-MM-dd kk-mm-ss",
                                         new Date()
                                 ).toString()
                         );
-                        Uri uri = ContentUris.withAppendedId(MyContentProvider.CONTENT_URI, memoId);
-                        getContentResolver().update(uri, values, MyContract.Memos.COLUMN_ID + " = ?", new String[] { Long.toString(memoId) });
+                        Uri uri = ContentUris.withAppendedId(MyContentProvider.CONTENT_URI, taskId);
+                        getContentResolver().update(uri, values, MyContract.Tasks.COLUMN_ID + " = ?", new String[] { Long.toString(taskId) });
                     }
                     Intent intent = new Intent(EditActivity.this, MyActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
