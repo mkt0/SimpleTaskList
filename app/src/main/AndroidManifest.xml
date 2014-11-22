@@ -31,7 +31,7 @@
             android:label="@string/title_activity_edit_lists" >
         </activity>
         <activity
-            android:name=".ListsEditActivity"
+            android:name=".ListEditActivity"
             android:label="@string/title_activity_lists_edit" >
         </activity>
     </application>
