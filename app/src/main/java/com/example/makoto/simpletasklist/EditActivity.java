@@ -24,7 +24,6 @@ public class EditActivity extends Activity {
     private long taskId;
     private EditText myTaskBody;
     private TextView myTaskUpdated;
-    private String title = "";
     private String body = "";
     private String updated = "";
 
@@ -42,9 +41,9 @@ public class EditActivity extends Activity {
         isNewTask = taskId == 0L ? true : false;
 
         if (isNewTask) {
-            getActionBar().setTitle("New Memo");
+            getActionBar().setTitle("New Task");
         } else {
-            getActionBar().setTitle("Edit Memo");
+            getActionBar().setTitle("Edit Task");
             Uri uri = ContentUris.withAppendedId(MyContentProvider.CONTENT_URI, taskId);
             String[] projection = new String[] {
                     MyContract.Tasks.COLUMN_BODY,
@@ -60,7 +59,6 @@ public class EditActivity extends Activity {
                     null
             );
             while (cursor.moveToNext()) {
-                title = cursor.getString(cursor.getColumnIndex(MyContract.Tasks.COLUMN_BODY));
                 body = cursor.getString(cursor.getColumnIndex(MyContract.Tasks.COLUMN_BODY));
                 updated ="Updated: " + cursor.getString(cursor.getColumnIndex(MyContract.Tasks.COLUMN_UPDATED));
             }

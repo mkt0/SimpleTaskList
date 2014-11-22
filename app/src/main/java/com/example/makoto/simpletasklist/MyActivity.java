@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.Toast;
 
 
 public class MyActivity extends Activity implements LoaderManager.LoaderCallbacks {
@@ -74,8 +73,9 @@ public class MyActivity extends Activity implements LoaderManager.LoaderCallback
             startActivity(intent);
             return true;
         } else if (id == R.id.action_agenda) {
-            Toast toast = Toast.makeText(this, "tapped agenda menu", Toast.LENGTH_SHORT);
-            toast.show();
+            Intent intent = new Intent(this, ListsActivity.class);
+            startActivity(intent);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
