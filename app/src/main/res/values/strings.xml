@@ -10,5 +10,6 @@
     <string name="body_hint_activity_edit">Body</string>
     <string name="updated_activity_edit">Updated: --------</string>
     <string name="action_settings">Settings</string>
+    <string name="action_agenda">Edit Lists</string>
 
 </resources>

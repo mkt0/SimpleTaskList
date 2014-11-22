@@ -4,6 +4,11 @@
     <item android:id="@+id/action_add"
         android:title="@string/action_add"
         android:icon="@android:drawable/ic_menu_add"
+        android:orderInCategory="200"
+        android:showAsAction="always|withText" />
+    <item android:id="@+id/action_agenda"
+        android:title="@string/action_agenda"
+        android:icon="@android:drawable/ic_menu_agenda"
         android:orderInCategory="100"
         android:showAsAction="always|withText" />
 </menu>

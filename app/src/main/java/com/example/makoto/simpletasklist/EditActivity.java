@@ -22,7 +22,6 @@ public class EditActivity extends Activity {
 
     private boolean isNewTask = true;
     private long taskId;
-    private EditText myTaskTitle;
     private EditText myTaskBody;
     private TextView myTaskUpdated;
     private String title = "";
@@ -37,7 +36,6 @@ public class EditActivity extends Activity {
         Intent intent = getIntent();
         taskId = intent.getLongExtra(MyActivity.EXTRA_MY_ID, 0L);
 
-        myTaskTitle = (EditText) findViewById(R.id.myMemoTitle);
         myTaskBody = (EditText) findViewById(R.id.myMemoBody);
         myTaskUpdated = (TextView) findViewById(R.id.myMemoUpdated);
 
@@ -67,7 +65,6 @@ public class EditActivity extends Activity {
                 updated ="Updated: " + cursor.getString(cursor.getColumnIndex(MyContract.Tasks.COLUMN_UPDATED));
             }
 
-            myTaskTitle.setText(title);
             myTaskBody.setText(body);
             myTaskUpdated.setText(updated);
         }
@@ -109,10 +106,9 @@ public class EditActivity extends Activity {
                 alertDialog.create().show();
                 break;
             case R.id.action_save:
-                title = myTaskTitle.getText().toString().trim();
                 body = myTaskBody.getText().toString().trim();
-                if (title.equals("")) {
-                    Toast toast = Toast.makeText(this,"Title is empty.", Toast.LENGTH_SHORT);
+                if (body.equals("")) {
+                    Toast toast = Toast.makeText(this,"Body is empty.", Toast.LENGTH_SHORT);
                     toast.show();
                 } else {
                     ContentValues values = new ContentValues();
