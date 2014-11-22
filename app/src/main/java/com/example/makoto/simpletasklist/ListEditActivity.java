@@ -90,26 +90,26 @@ public class ListEditActivity extends Activity {
                     toast.setText("Title is empty.");
                     toast.show();
                 } else {
-//                    ContentValues values = new ContentValues();
-//                    values.put(MyContract.TaskLists.COLUMN_TITLE, listTitle);
-//                    if (isNewList) {
-//                        // insert
-//                        getContentResolver().insert(MyContentProvider.TASK_LISTS_URI, values);
-//                    } else {
-//                        // update
-//                        values.put(
-//                                MyContract.TaskLists.COLUMN_UPDATED,
-//                                android.text.format.DateFormat.format(
-//                                        "yyyy-MM-dd kk-mm-ss",
-//                                        new Date()
-//                                ).toString()
-//                        );
-//                        Uri uri = ContentUris.withAppendedId(MyContentProvider.TASK_LISTS_URI, listId);
-//                        getContentResolver().update(uri, values, MyContract.TaskLists.COLUMN_ID + " = ?", new String[]{Long.toString(listId)});
-//                    }
-//                    Intent intent = new Intent(ListEditActivity.this, ListsActivity.class);
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                    startActivity(intent);
+                    ContentValues values = new ContentValues();
+                    values.put(MyContract.TaskLists.COLUMN_TITLE, listTitle);
+                    if (isNewList) {
+                        // insert
+                        getContentResolver().insert(MyContentProvider.TASK_LISTS_URI, values);
+                    } else {
+                        // update
+                        values.put(
+                                MyContract.TaskLists.COLUMN_UPDATED,
+                                android.text.format.DateFormat.format(
+                                        "yyyy-MM-dd kk-mm-ss",
+                                        new Date()
+                                ).toString()
+                        );
+                        Uri uri = ContentUris.withAppendedId(MyContentProvider.TASK_LISTS_URI, listId);
+                        getContentResolver().update(uri, values, MyContract.TaskLists.COLUMN_ID + " = ?", new String[]{Long.toString(listId)});
+                    }
+                    Intent intent = new Intent(ListEditActivity.this, ListsActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
                 }
                 break;
             case R.id.action_delete_list:

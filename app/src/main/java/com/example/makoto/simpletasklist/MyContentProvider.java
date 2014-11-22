@@ -16,14 +16,21 @@ public class MyContentProvider extends ContentProvider {
     private MyDbHelper myDbHelper;
 
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + MyContract.Tasks.TABLE_NAME);
+    public static final Uri TASK_LISTS_URI = Uri.parse("content://" + AUTHORITY + "/" + MyContract.TaskLists.TABLE_NAME);
+
     private static final int TASKS = 1;
     private static final int TASK_ITEM = 2;
+    private static final int LISTS = 3;
+    private static final int LIST_ITEM = 4;
+
 
     private static final UriMatcher uriMatcher;
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(AUTHORITY, MyContract.Tasks.TABLE_NAME, TASKS);
         uriMatcher.addURI(AUTHORITY, MyContract.Tasks.TABLE_NAME + "/#", TASK_ITEM);
+        uriMatcher.addURI(AUTHORITY, MyContract.TaskLists.TABLE_NAME, LISTS);
+        uriMatcher.addURI(AUTHORITY, MyContract.TaskLists.TABLE_NAME + "/#", LIST_ITEM);
     }
 
     @Override
@@ -39,19 +46,31 @@ public class MyContentProvider extends ContentProvider {
         switch (uriMatcher.match(uri)) {
             case TASKS:
             case TASK_ITEM:
+                cursor = myDbHelper.getReadableDatabase().query(
+                        MyContract.Tasks.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            case LISTS:
+            case LIST_ITEM:
+                cursor = myDbHelper.getReadableDatabase().query(
+                        MyContract.TaskLists.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI");
         }
-        cursor = myDbHelper.getReadableDatabase().query(
-                MyContract.Tasks.TABLE_NAME,
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                sortOrder
-        );
 
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
