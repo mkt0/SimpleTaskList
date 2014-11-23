@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,6 +23,7 @@ public class ListEditActivity extends Activity {
     private EditText myListTitle;
     private TextView myListUpdated;
     private String listTitle;
+    private String listUpdated;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,27 +42,27 @@ public class ListEditActivity extends Activity {
             getActionBar().setTitle("New List");
         } else {
             getActionBar().setTitle("Edit List");
-//            Uri uri = ContentUris.withAppendedId(MyContentProvider.CONTENT_URI, taskId);
-//            String[] projection = new String[] {
-//                    MyContract.Tasks.COLUMN_BODY,
-//                    MyContract.Tasks.COLUMN_UPDATED
-//            };
-//            String selection = MyContract.Tasks.COLUMN_ID + " = ?";
-//            String[] selectionArgs = new String[] { Long.toString(taskId) };
-//            Cursor cursor = getContentResolver().query(
-//                    uri,
-//                    projection,
-//                    selection,
-//                    selectionArgs,
-//                    null
-//            );
-//            while (cursor.moveToNext()) {
-//                body = cursor.getString(cursor.getColumnIndex(MyContract.Tasks.COLUMN_BODY));
-//                updated ="Updated: " + cursor.getString(cursor.getColumnIndex(MyContract.Tasks.COLUMN_UPDATED));
-//            }
-//
-//            myTaskBody.setText(body);
-//            myTaskUpdated.setText(updated);
+            Uri uri = ContentUris.withAppendedId(MyContentProvider.TASK_LISTS_URI, listId);
+            String[] projection = new String[] {
+                    MyContract.TaskLists.COLUMN_TITLE,
+                    MyContract.TaskLists.COLUMN_UPDATED
+            };
+            String selection = MyContract.TaskLists.COLUMN_ID + " = ?";
+            String[] selectionArgs = new String[] { Long.toString(listId) };
+            Cursor cursor = getContentResolver().query(
+                    uri,
+                    projection,
+                    selection,
+                    selectionArgs,
+                    null
+            );
+            while (cursor.moveToNext()) {
+                listTitle = cursor.getString(cursor.getColumnIndex(MyContract.TaskLists.COLUMN_TITLE));
+                listUpdated ="Updated: " + cursor.getString(cursor.getColumnIndex(MyContract.TaskLists.COLUMN_UPDATED));
+            }
+
+            myListTitle.setText(listTitle);
+            myListUpdated.setText(listUpdated);
         }
 
     }

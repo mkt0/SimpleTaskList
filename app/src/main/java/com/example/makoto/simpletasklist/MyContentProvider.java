@@ -15,7 +15,7 @@ public class MyContentProvider extends ContentProvider {
     private static final String AUTHORITY = "com.example.makoto.simpletasklist.mycontentprovider";
     private MyDbHelper myDbHelper;
 
-    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + MyContract.Tasks.TABLE_NAME);
+    public static final Uri TASKS_URI = Uri.parse("content://" + AUTHORITY + "/" + MyContract.Tasks.TABLE_NAME);
     public static final Uri TASK_LISTS_URI = Uri.parse("content://" + AUTHORITY + "/" + MyContract.TaskLists.TABLE_NAME);
 
     private static final int TASKS = 1;
@@ -83,17 +83,30 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
-        if (uriMatcher.match(uri) != TASKS) {
-            throw new IllegalArgumentException("Unknown URI");
+        Uri newUri;
+        long insertedId;
+
+        switch (uriMatcher.match(uri)) {
+            case TASKS:
+                insertedId = myDbHelper.getWritableDatabase().insert(
+                        MyContract.Tasks.TABLE_NAME,
+                        null,
+                        contentValues
+                );
+                newUri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, insertedId);
+                break;
+            case LISTS:
+                insertedId = myDbHelper.getWritableDatabase().insert(
+                        MyContract.TaskLists.TABLE_NAME,
+                        null,
+                        contentValues
+                );
+                newUri = ContentUris.withAppendedId(MyContentProvider.TASK_LISTS_URI, insertedId);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI");
         }
 
-        SQLiteDatabase db =  myDbHelper.getWritableDatabase();
-        long insertedId = db.insert(
-                MyContract.Tasks.TABLE_NAME,
-                null,
-                contentValues
-        );
-        Uri newUri = ContentUris.withAppendedId(MyContentProvider.CONTENT_URI,insertedId);
         getContext().getContentResolver().notifyChange(uri, null);
         return newUri;
     }

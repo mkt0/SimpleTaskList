@@ -87,7 +87,7 @@ public class MyActivity extends Activity implements LoaderManager.LoaderCallback
                 MyContract.Tasks.COLUMN_BODY
         };
 
-        return new CursorLoader(this, MyContentProvider.CONTENT_URI, projection, null, null, "updated desc");
+        return new CursorLoader(this, MyContentProvider.TASKS_URI, projection, null, null, "updated desc");
     }
 
     @Override

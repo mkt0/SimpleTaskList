@@ -44,7 +44,7 @@ public class EditActivity extends Activity {
             getActionBar().setTitle("New Task");
         } else {
             getActionBar().setTitle("Edit Task");
-            Uri uri = ContentUris.withAppendedId(MyContentProvider.CONTENT_URI, taskId);
+            Uri uri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, taskId);
             String[] projection = new String[] {
                     MyContract.Tasks.COLUMN_BODY,
                     MyContract.Tasks.COLUMN_UPDATED
@@ -91,7 +91,7 @@ public class EditActivity extends Activity {
                 alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Uri deleteUri = ContentUris.withAppendedId(MyContentProvider.CONTENT_URI, taskId);
+                        Uri deleteUri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, taskId);
                         String selection = MyContract.Tasks.COLUMN_ID + " = ?";
                         String[] selectionArgs = new String[] { Long.toString(taskId) };
                         getContentResolver().delete(deleteUri, selection, selectionArgs);
@@ -113,7 +113,7 @@ public class EditActivity extends Activity {
                     values.put(MyContract.Tasks.COLUMN_BODY, body);
                     if (isNewTask) {
                         // insert
-                        getContentResolver().insert(MyContentProvider.CONTENT_URI, values);
+                        getContentResolver().insert(MyContentProvider.TASKS_URI, values);
                     } else {
                         // update
                         values.put(
@@ -123,7 +123,7 @@ public class EditActivity extends Activity {
                                         new Date()
                                 ).toString()
                         );
-                        Uri uri = ContentUris.withAppendedId(MyContentProvider.CONTENT_URI, taskId);
+                        Uri uri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, taskId);
                         getContentResolver().update(uri, values, MyContract.Tasks.COLUMN_ID + " = ?", new String[] { Long.toString(taskId) });
                     }
                     Intent intent = new Intent(EditActivity.this, MyActivity.class);
