@@ -1,8 +1,10 @@
 package com.example.makoto.simpletasklist;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -115,8 +117,23 @@ public class ListEditActivity extends Activity {
                 }
                 break;
             case R.id.action_delete_list:
-                toast.setText("delete.");
-                toast.show();
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+                alertDialog.setTitle("Delete TaskList");
+                alertDialog.setMessage("Are you sure?");
+                alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Uri deleteUri = ContentUris.withAppendedId(MyContentProvider.TASK_LISTS_URI, listId);
+                        String selection = MyContract.TaskLists.COLUMN_ID + " = ?";
+                        String[] selectionArgs = new String[] { Long.toString(listId) };
+                        getContentResolver().delete(deleteUri, selection, selectionArgs);
+
+                        Intent intent = new Intent(ListEditActivity.this, ListsActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    }
+                });
+                alertDialog.create().show();
                 break;
             default:
                 toast.setText("Unknown!");

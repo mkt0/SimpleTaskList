@@ -113,16 +113,27 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        if (uriMatcher.match(uri) != TASK_ITEM) {
-            throw new IllegalArgumentException("Unknown URI");
-        }
+        int count;
 
-        SQLiteDatabase db =  myDbHelper.getWritableDatabase();
-        int count = db.delete(
-                MyContract.Tasks.TABLE_NAME,
-                selection,
-                selectionArgs
-        );
+        switch (uriMatcher.match(uri)) {
+            case TASK_ITEM:
+                count = myDbHelper.getWritableDatabase().delete(
+                        MyContract.Tasks.TABLE_NAME,
+                        selection,
+                        selectionArgs
+                );
+                break;
+            case LIST_ITEM:
+                count = myDbHelper.getWritableDatabase().delete(
+                        MyContract.TaskLists.TABLE_NAME,
+                        selection,
+                        selectionArgs
+                );
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI");
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
         return count;
     }
 
