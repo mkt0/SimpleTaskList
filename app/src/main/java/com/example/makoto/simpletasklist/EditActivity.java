@@ -22,7 +22,9 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 
 public class EditActivity extends Activity implements LoaderManager.LoaderCallbacks {
@@ -34,6 +36,7 @@ public class EditActivity extends Activity implements LoaderManager.LoaderCallba
     private String body = "";
     private String updated = "";
     private SimpleCursorAdapter adapter;
+    private ArrayList<HashMap<String, String>> loadedLists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +80,9 @@ public class EditActivity extends Activity implements LoaderManager.LoaderCallba
         String[] from = new String[] { MyContract.TaskLists.COLUMN_TITLE };
         int[] to = new int[] { android.R.id.text1 };
         adapter = new SimpleCursorAdapter(this, android.R.layout.select_dialog_item, null, from, to, 0);
+
+        loadedLists = new ArrayList<HashMap<String, String>>();
+
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -144,16 +150,22 @@ public class EditActivity extends Activity implements LoaderManager.LoaderCallba
                 }
                 break;
             case R.id.action_set_as:
-                // TODO: リスト選択UIを表示。
-                AlertDialog.Builder singleChoiceDialog = new AlertDialog.Builder(this);
-                singleChoiceDialog.setTitle("Select List");
-                singleChoiceDialog.setAdapter(adapter, new DialogInterface.OnClickListener() {
+                AlertDialog.Builder listChoiceDialog = new AlertDialog.Builder(this);
+                listChoiceDialog.setTitle("Select List");
+                listChoiceDialog.setAdapter(adapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Log.d("debug", "clicked item: " + i);
+                        Long listId = Long.valueOf(loadedLists.get(i).get(MyContract.TaskLists.COLUMN_ID));
+                        Uri uri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, taskId);
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(MyContract.Tasks.COLUMN_LIST_ID, listId);
+                        String selection = MyContract.Tasks.COLUMN_ID + " = ?";
+                        String[] selectionArgs = new String[] { Long.toString(taskId) };
+                        getContentResolver().update(uri, contentValues, selection, selectionArgs);
+                        Log.d("DEBUG", "task:" + taskId + " associated to list:" + listId);
                     }
                 });
-                singleChoiceDialog.create().show();
+                listChoiceDialog.create().show();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Action.");
@@ -173,7 +185,15 @@ public class EditActivity extends Activity implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader loader, Object data) {
-        adapter.swapCursor((Cursor) data);
+        Cursor c = (Cursor) data;
+        while (c.moveToNext()) {
+            HashMap<String, String> map = new HashMap<String, String>();
+            map.put(MyContract.TaskLists.COLUMN_ID, c.getString(c.getColumnIndex(MyContract.TaskLists.COLUMN_ID)));
+            map.put(MyContract.TaskLists.COLUMN_TITLE, c.getString(c.getColumnIndex(MyContract.TaskLists.COLUMN_TITLE)));
+            loadedLists.add(map);
+        }
+        // swapする前にcursorを進めるとマズイ？
+        adapter.swapCursor(c);
     }
 
     @Override

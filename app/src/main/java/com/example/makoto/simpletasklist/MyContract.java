@@ -14,13 +14,15 @@ public class MyContract {
         public static final String COLUMN_BODY = "body";
         public static final String COLUMN_CREATED = "created";
         public static final String COLUMN_UPDATED = "updated";
+        public static final String COLUMN_LIST_ID = "list_id";
 
         public static final String CREATE_TABLE =
                 "CREATE TABLE " + TABLE_NAME + " ( " +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_BODY + " TEXT, " +
                 COLUMN_CREATED + " DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-                COLUMN_UPDATED + " DATETIME DEFAULT CURRENT_TIMESTAMP )";
+                COLUMN_UPDATED + " DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+                COLUMN_LIST_ID + " INTEGER )";
         public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
         public static final String INIT_TABLE =
                 "INSERT INTO " + TABLE_NAME +
