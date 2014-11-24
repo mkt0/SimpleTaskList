@@ -6,6 +6,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,8 +17,8 @@ import android.widget.SimpleCursorAdapter;
 
 public class MyActivity extends Activity implements LoaderManager.LoaderCallbacks {
 
-    private SimpleCursorAdapter adapter;
     public static final String EXTRA_MY_ID = "com.example.makoto.simpletasklist.EXTRA_MY_ID";
+    private SimpleCursorAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,14 @@ public class MyActivity extends Activity implements LoaderManager.LoaderCallback
                 Intent intent = new Intent(MyActivity.this, EditActivity.class);
                 intent.putExtra(EXTRA_MY_ID, l);
                 startActivity(intent);
+            }
+        });
+        myListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d("EVENT", "Long Clicked! Item: " + l);
+                // TODO:リスト選択UIの表示させる。
+                return true;
             }
         });
 
@@ -99,6 +108,4 @@ public class MyActivity extends Activity implements LoaderManager.LoaderCallback
     public void onLoaderReset(Loader loader) {
         adapter.swapCursor(null);
     }
-
-
 }

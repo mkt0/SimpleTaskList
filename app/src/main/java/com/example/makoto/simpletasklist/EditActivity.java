@@ -2,23 +2,30 @@ package com.example.makoto.simpletasklist;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Date;
 
 
-public class EditActivity extends Activity {
+public class EditActivity extends Activity implements LoaderManager.LoaderCallbacks {
 
     private boolean isNewTask = true;
     private long taskId;
@@ -26,6 +33,7 @@ public class EditActivity extends Activity {
     private TextView myTaskUpdated;
     private String body = "";
     private String updated = "";
+    private SimpleCursorAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +74,10 @@ public class EditActivity extends Activity {
             myTaskBody.setText(body);
             myTaskUpdated.setText(updated);
         }
+        String[] from = new String[] { MyContract.TaskLists.COLUMN_TITLE };
+        int[] to = new int[] { android.R.id.text1 };
+        adapter = new SimpleCursorAdapter(this, android.R.layout.select_dialog_item, null, from, to, 0);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -85,15 +97,15 @@ public class EditActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_delete:
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-                alertDialog.setTitle("Delete Memo");
-                alertDialog.setMessage("Are you sure?");
-                alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                AlertDialog.Builder deletionAlertDialog = new AlertDialog.Builder(this);
+                deletionAlertDialog.setTitle("Delete Task");
+                deletionAlertDialog.setMessage("Are you sure?");
+                deletionAlertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Uri deleteUri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, taskId);
                         String selection = MyContract.Tasks.COLUMN_ID + " = ?";
-                        String[] selectionArgs = new String[] { Long.toString(taskId) };
+                        String[] selectionArgs = new String[]{Long.toString(taskId)};
                         getContentResolver().delete(deleteUri, selection, selectionArgs);
 
                         Intent intent = new Intent(EditActivity.this, MyActivity.class);
@@ -101,7 +113,7 @@ public class EditActivity extends Activity {
                         startActivity(intent);
                     }
                 });
-                alertDialog.create().show();
+                deletionAlertDialog.create().show();
                 break;
             case R.id.action_save:
                 body = myTaskBody.getText().toString().trim();
@@ -131,7 +143,41 @@ public class EditActivity extends Activity {
                     startActivity(intent);
                 }
                 break;
+            case R.id.action_set_as:
+                // TODO: リスト選択UIを表示。
+                AlertDialog.Builder singleChoiceDialog = new AlertDialog.Builder(this);
+                singleChoiceDialog.setTitle("Select List");
+                singleChoiceDialog.setAdapter(adapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Log.d("debug", "clicked item: " + i);
+                    }
+                });
+                singleChoiceDialog.create().show();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown Action.");
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public Loader onCreateLoader(int i, Bundle bundle) {
+        Uri uri = MyContentProvider.TASK_LISTS_URI;
+        String[] projection = new String[] {
+                MyContract.TaskLists.COLUMN_ID,
+                MyContract.TaskLists.COLUMN_TITLE
+        };
+        return new CursorLoader(this, uri, projection, null, null, "updated desc");
+    }
+
+    @Override
+    public void onLoadFinished(Loader loader, Object data) {
+        adapter.swapCursor((Cursor) data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+        adapter.swapCursor(null);
     }
 }

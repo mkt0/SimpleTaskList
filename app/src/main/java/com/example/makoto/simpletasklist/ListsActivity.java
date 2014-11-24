@@ -16,6 +16,8 @@ import android.widget.SimpleCursorAdapter;
 
 public class ListsActivity extends Activity implements LoaderManager.LoaderCallbacks {
 
+    // TODO: リストが保持するアイテムの数をカッコ内に表示する。
+
     public static final String EXTRA_LIST_ID = "com.example.makoto.simpletasklist.EXTRA_LIST_ID";
     private ListView listListView;
     private SimpleCursorAdapter adapter;
