@@ -1,5 +1,6 @@
 package com.example.makoto.simpletasklist;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
@@ -13,38 +14,55 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.SpinnerAdapter;
 
 
 public class MyActivity extends Activity implements LoaderManager.LoaderCallbacks {
 
     public static final String EXTRA_MY_ID = "com.example.makoto.simpletasklist.EXTRA_MY_ID";
-    private SimpleCursorAdapter adapter;
+    private static final int TASK_LOADER_ID = 0;
+    private static final int LIST_LOADER_ID = 1;
+
+    private SimpleCursorAdapter taskListAdapter;
+    private SpinnerAdapter spinnerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
 
-        String[] from = new String[] {
-                MyContract.Tasks.COLUMN_BODY
+        // create SpinnerAdapter
+        String[] listFrom = new String[] { MyContract.TaskLists.COLUMN_TITLE };
+        int[] listTo = new int[] { android.R.id.text1 };
+        // TODO: ドロップダウンの文字色を変える
+        spinnerAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_dropdown_item, null, listFrom, listTo, 0);
+
+        // implement OnNavigationListener callback
+        ActionBar.OnNavigationListener onNavigationListener = new ActionBar.OnNavigationListener() {
+            @Override
+            public boolean onNavigationItemSelected(int position, long itemId) {
+                // TODO: リスト切り替え処理
+                Log.d("DEBUG", "Navigation item selected: " + position);
+                return false;
+            }
         };
 
-        int[] to = new int[] {
-                android.R.id.text1
-        };
+        // enable Actionbar dropdown list
+        ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setListNavigationCallbacks(spinnerAdapter, onNavigationListener);
 
-        adapter = new SimpleCursorAdapter(
-                this,
-                android.R.layout.simple_list_item_1,
-                null,
-                from,
-                to,
-                0
-        );
 
-        ListView myListView = (ListView) findViewById(R.id.myListView);
-        myListView.setAdapter(adapter);
-        myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        // set taskListAdapter to inboxListView
+        String[] taskFrom = new String[] { MyContract.Tasks.COLUMN_BODY };
+        int[] taskTo = new int[] { android.R.id.text1 };
+        taskListAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null, taskFrom, taskTo, 0);
+        ListView inboxListView = (ListView) findViewById(R.id.inboxListView);
+        inboxListView.setAdapter(taskListAdapter);
+
+        // set Listeners to inboxListView
+        inboxListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(MyActivity.this, EditActivity.class);
@@ -52,16 +70,17 @@ public class MyActivity extends Activity implements LoaderManager.LoaderCallback
                 startActivity(intent);
             }
         });
-        myListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        inboxListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.d("EVENT", "Long Clicked! Item: " + l);
-                // TODO:リスト選択UIの表示させる。
+                // TODO:リスト選択ダイアログを表示させる。
                 return true;
             }
         });
 
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(TASK_LOADER_ID, null, this);
+        getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
     }
 
     @Override
@@ -90,22 +109,46 @@ public class MyActivity extends Activity implements LoaderManager.LoaderCallback
     }
 
     @Override
-    public Loader onCreateLoader(int i, Bundle bundle) {
-        String[] projection = new String[] {
-                MyContract.Tasks.COLUMN_ID,
-                MyContract.Tasks.COLUMN_BODY
-        };
-
-        return new CursorLoader(this, MyContentProvider.TASKS_URI, projection, null, null, "updated desc");
+    public Loader onCreateLoader(int loaderId, Bundle bundle) {
+        String[] projection;
+        switch (loaderId) {
+            case TASK_LOADER_ID:
+                projection = new String[] {
+                        MyContract.Tasks.COLUMN_ID,
+                        MyContract.Tasks.COLUMN_BODY
+                };
+                return new CursorLoader(this, MyContentProvider.TASKS_URI, projection, null, null, "updated desc");
+            case LIST_LOADER_ID:
+                projection = new String[] {
+                        MyContract.TaskLists.COLUMN_ID,
+                        MyContract.TaskLists.COLUMN_TITLE
+                };
+                return new CursorLoader(this, MyContentProvider.TASK_LISTS_URI, projection, null, null, "updated desc");
+        }
+        return null;
     }
 
     @Override
     public void onLoadFinished(Loader loader, Object cursor) {
-        adapter.swapCursor((android.database.Cursor) cursor);
+        switch (loader.getId()) {
+            case TASK_LOADER_ID:
+                taskListAdapter.swapCursor((android.database.Cursor) cursor);
+                break;
+            case LIST_LOADER_ID:
+                ((SimpleCursorAdapter) spinnerAdapter).swapCursor((android.database.Cursor) cursor);
+                break;
+        }
     }
 
     @Override
     public void onLoaderReset(Loader loader) {
-        adapter.swapCursor(null);
+        switch (loader.getId()) {
+            case TASK_LOADER_ID:
+                taskListAdapter.swapCursor(null);
+                break;
+            case LIST_LOADER_ID:
+                ((SimpleCursorAdapter) spinnerAdapter).swapCursor(null);
+                break;
+        }
     }
 }
