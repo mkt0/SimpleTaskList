@@ -135,10 +135,10 @@ public class ListEditActivity extends Activity {
                 });
                 alertDialog.create().show();
                 break;
-            default:
-                toast.setText("Unknown!");
-                toast.show();
+            case android.R.id.home:
                 break;
+            default:
+                throw new IllegalArgumentException("Unknown Action!");
         }
         return super.onOptionsItemSelected(item);
     }

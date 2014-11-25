@@ -167,6 +167,8 @@ public class EditActivity extends Activity implements LoaderManager.LoaderCallba
                 });
                 listChoiceDialog.create().show();
                 break;
+            case android.R.id.home:
+                break;
             default:
                 throw new IllegalArgumentException("Unknown Action.");
         }

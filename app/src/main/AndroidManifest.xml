@@ -24,15 +24,18 @@
 
         <activity
             android:name=".EditActivity"
-            android:label="@string/title_activity_edit" >
+            android:label="@string/title_activity_edit"
+            android:parentActivityName=".MyActivity">
         </activity>
         <activity
             android:name=".ListsActivity"
-            android:label="@string/title_activity_edit_lists" >
+            android:label="@string/title_activity_edit_lists"
+            android:parentActivityName=".MyActivity">
         </activity>
         <activity
             android:name=".ListEditActivity"
-            android:label="@string/title_activity_lists_edit" >
+            android:label="@string/title_activity_lists_edit"
+            android:parentActivityName=".ListsActivity">
         </activity>
     </application>
 
