@@ -34,8 +34,7 @@ public class MyActivity extends Activity implements LoaderManager.LoaderCallback
         // create SpinnerAdapter
         String[] listFrom = new String[] { MyContract.TaskLists.COLUMN_TITLE };
         int[] listTo = new int[] { android.R.id.text1 };
-        // TODO: ドロップダウンの文字色を変える
-        spinnerAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_dropdown_item, null, listFrom, listTo, 0);
+        spinnerAdapter = new SimpleCursorAdapter(getActionBar().getThemedContext(), android.R.layout.simple_spinner_dropdown_item, null, listFrom, listTo, 0);
 
         // implement OnNavigationListener callback
         ActionBar.OnNavigationListener onNavigationListener = new ActionBar.OnNavigationListener() {
