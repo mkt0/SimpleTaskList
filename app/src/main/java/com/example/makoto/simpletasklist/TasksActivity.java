@@ -6,6 +6,7 @@ import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -16,15 +17,22 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.SpinnerAdapter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 
-public class MyActivity extends Activity implements LoaderManager.LoaderCallbacks {
+
+public class TasksActivity extends Activity implements LoaderManager.LoaderCallbacks {
 
     public static final String EXTRA_MY_ID = "com.example.makoto.simpletasklist.EXTRA_MY_ID";
     private static final int TASK_LOADER_ID = 0;
     private static final int LIST_LOADER_ID = 1;
+    private static final String BUNDLE_TASK_SELECTION = "list_selection";
+    private static final String BUNDLE_TASK_SELECTION_ARGS = "list_selection_args";
 
     private SimpleCursorAdapter taskListAdapter;
     private SpinnerAdapter spinnerAdapter;
+    private ArrayList<HashMap<String,String>> loadedLists;
+    private long currentListId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +48,16 @@ public class MyActivity extends Activity implements LoaderManager.LoaderCallback
         ActionBar.OnNavigationListener onNavigationListener = new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int position, long itemId) {
-                // TODO: リスト切り替え処理
-                Log.d("DEBUG", "Navigation item selected: " + position);
+                Log.d("debug", "Spinner Pos: " + position + ", id: " + itemId);
+                Log.d("debug", "Current List Id: " + currentListId);
+                if (currentListId != itemId) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString(BUNDLE_TASK_SELECTION, MyContract.Tasks.COLUMN_LIST_ID + " = ?");
+                    bundle.putString(BUNDLE_TASK_SELECTION_ARGS, Long.toString(itemId));
+                    getLoaderManager().restartLoader(TASK_LOADER_ID, bundle, TasksActivity.this);
+                    currentListId = itemId;
+                    Log.d("debug", "Current List: " + getLoadedListTitle(currentListId));
+                }
                 return false;
             }
         };
@@ -52,24 +68,23 @@ public class MyActivity extends Activity implements LoaderManager.LoaderCallback
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setListNavigationCallbacks(spinnerAdapter, onNavigationListener);
 
-
-        // set taskListAdapter to inboxListView
+        // set taskListAdapter to taskListView
         String[] taskFrom = new String[] { MyContract.Tasks.COLUMN_BODY };
         int[] taskTo = new int[] { android.R.id.text1 };
         taskListAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null, taskFrom, taskTo, 0);
-        ListView inboxListView = (ListView) findViewById(R.id.inboxListView);
-        inboxListView.setAdapter(taskListAdapter);
+        ListView taskListView = (ListView) findViewById(R.id.taskListView);
+        taskListView.setAdapter(taskListAdapter);
 
-        // set Listeners to inboxListView
-        inboxListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        // set Listeners to taskListView
+        taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(MyActivity.this, EditActivity.class);
+                Intent intent = new Intent(TasksActivity.this, TaskEditActivity.class);
                 intent.putExtra(EXTRA_MY_ID, l);
                 startActivity(intent);
             }
         });
-        inboxListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        taskListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.d("EVENT", "Long Clicked! Item: " + l);
@@ -78,8 +93,19 @@ public class MyActivity extends Activity implements LoaderManager.LoaderCallback
             }
         });
 
+        loadedLists = new ArrayList<HashMap<String, String>>();
+
         getLoaderManager().initLoader(TASK_LOADER_ID, null, this);
         getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
+    }
+
+    private String getLoadedListTitle(long id) {
+        for (HashMap<String, String> map : loadedLists) {
+            if (map.get(MyContract.TaskLists.COLUMN_ID).equals(Long.toString(id))) {
+                return map.get(MyContract.TaskLists.COLUMN_TITLE);
+            }
+        }
+        return null;
     }
 
     @Override
@@ -96,7 +122,7 @@ public class MyActivity extends Activity implements LoaderManager.LoaderCallback
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_add) {
-            Intent intent = new Intent(this, EditActivity.class);
+            Intent intent = new Intent(this, TaskEditActivity.class);
             startActivity(intent);
             return true;
         } else if (id == R.id.action_agenda) {
@@ -109,20 +135,37 @@ public class MyActivity extends Activity implements LoaderManager.LoaderCallback
 
     @Override
     public Loader onCreateLoader(int loaderId, Bundle bundle) {
+        Log.d("debug", "onCreateLoader called!");
         String[] projection;
+        String selection = null;
+        String[] selectionArgs = null;
+
         switch (loaderId) {
             case TASK_LOADER_ID:
                 projection = new String[] {
                         MyContract.Tasks.COLUMN_ID,
                         MyContract.Tasks.COLUMN_BODY
                 };
-                return new CursorLoader(this, MyContentProvider.TASKS_URI, projection, null, null, "updated desc");
+                if ( bundle != null && !(bundle.getString(BUNDLE_TASK_SELECTION_ARGS).equals("1")) ) {
+                    selection = bundle.getString(BUNDLE_TASK_SELECTION);
+                    selectionArgs = new String[] { bundle.getString(BUNDLE_TASK_SELECTION_ARGS) };
+                    Log.d("debug", "got loader bundle!");
+                }
+
+                return new CursorLoader(this, MyContentProvider.TASKS_URI, projection, selection, selectionArgs, "updated desc");
             case LIST_LOADER_ID:
                 projection = new String[] {
                         MyContract.TaskLists.COLUMN_ID,
                         MyContract.TaskLists.COLUMN_TITLE
                 };
-                return new CursorLoader(this, MyContentProvider.TASK_LISTS_URI, projection, null, null, "updated desc");
+                return new CursorLoader(
+                        this,
+                        MyContentProvider.TASK_LISTS_URI,
+                        projection,
+                        null,
+                        null,
+                        MyContract.TaskLists.COLUMN_ORDER + " asc"
+                );
         }
         return null;
     }
@@ -134,7 +177,15 @@ public class MyActivity extends Activity implements LoaderManager.LoaderCallback
                 taskListAdapter.swapCursor((android.database.Cursor) cursor);
                 break;
             case LIST_LOADER_ID:
-                ((SimpleCursorAdapter) spinnerAdapter).swapCursor((android.database.Cursor) cursor);
+                Cursor c = (Cursor) cursor;
+                while (c.moveToNext()) {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put(MyContract.TaskLists.COLUMN_ID, c.getString(c.getColumnIndex(MyContract.TaskLists.COLUMN_ID)));
+                    map.put(MyContract.TaskLists.COLUMN_TITLE, c.getString(c.getColumnIndex(MyContract.TaskLists.COLUMN_TITLE)));
+                    loadedLists.add(map);
+                }
+                ((SimpleCursorAdapter) spinnerAdapter).swapCursor(c);
+                currentListId = Long.parseLong( loadedLists.get(0).get(MyContract.TaskLists.COLUMN_ID) );
                 break;
         }
     }

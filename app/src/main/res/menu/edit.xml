@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.makoto.simpletasklist.EditActivity" >
+    tools:context="com.example.makoto.simpletasklist.TaskEditActivity" >
     <item android:id="@+id/action_set_as"
         android:title="@string/action_set_as"
         android:icon="@android:drawable/ic_menu_set_as"

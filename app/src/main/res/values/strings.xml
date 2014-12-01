@@ -16,5 +16,7 @@
     <string name="title_activity_lists_edit">ListEditActivity</string>
     <string name="title_hint_activity_edit">Title</string>
     <string name="updated_activity_edit">Updated: --------</string>
+    <string name="title_activity_tasks">TasksActivity</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>

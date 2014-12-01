@@ -22,12 +22,12 @@ public class MyContract {
                 COLUMN_BODY + " TEXT, " +
                 COLUMN_CREATED + " DATETIME DEFAULT CURRENT_TIMESTAMP, " +
                 COLUMN_UPDATED + " DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-                COLUMN_LIST_ID + " INTEGER )";
+                COLUMN_LIST_ID + " INTEGER DEFAULT 1 )";
         public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
         public static final String INIT_TABLE =
                 "INSERT INTO " + TABLE_NAME +
                 " ( " + COLUMN_BODY +
-                " ) VALUES ( 'body1' ), ( 'body2' )";
+                " ) VALUES ( 'task1' ), ( 'task2' ), ( 'task3' )";
 
 
     }
@@ -38,18 +38,20 @@ public class MyContract {
         public static final String COLUMN_TITLE = "title";
         public static final String COLUMN_CREATED = "created";
         public static final String COLUMN_UPDATED = "updated";
+        public static final String COLUMN_ORDER = "order_rank";
 
         public static final String CREATE_TABLE =
                 "CREATE TABLE " + TABLE_NAME + " ( " +
                         COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         COLUMN_TITLE + " TEXT, " +
                         COLUMN_CREATED + " DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-                        COLUMN_UPDATED + " DATETIME DEFAULT CURRENT_TIMESTAMP )";
+                        COLUMN_UPDATED + " DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+                        COLUMN_ORDER + " INTEGER DEFAULT 100 )";
         public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
         public static final String INIT_TABLE =
                 "INSERT INTO " + TABLE_NAME +
-                        " ( " + COLUMN_TITLE +
-                        " ) VALUES ( 'title1' ), ( 'title2' )";
+                        " ( " + COLUMN_TITLE + ", " + COLUMN_ORDER +
+                        " ) VALUES ( 'Inbox', 0 ), ( 'Trash', 1000 ), ( 'Finished', 100 )";
 
 
     }

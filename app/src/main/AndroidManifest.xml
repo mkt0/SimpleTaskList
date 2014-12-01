@@ -8,7 +8,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MyActivity"
+            android:name=".TasksActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,19 +23,19 @@
             android:exported="false" />
 
         <activity
-            android:name=".EditActivity"
+            android:name=".TaskEditActivity"
             android:label="@string/title_activity_edit"
-            android:parentActivityName=".MyActivity">
+            android:parentActivityName=".TasksActivity" >
         </activity>
         <activity
             android:name=".ListsActivity"
             android:label="@string/title_activity_edit_lists"
-            android:parentActivityName=".MyActivity">
+            android:parentActivityName=".TasksActivity" >
         </activity>
         <activity
             android:name=".ListEditActivity"
             android:label="@string/title_activity_lists_edit"
-            android:parentActivityName=".ListsActivity">
+            android:parentActivityName=".ListsActivity" >
         </activity>
     </application>
 

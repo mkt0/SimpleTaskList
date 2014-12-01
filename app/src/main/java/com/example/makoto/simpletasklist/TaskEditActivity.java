@@ -15,9 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 
-public class EditActivity extends Activity implements LoaderManager.LoaderCallbacks {
+public class TaskEditActivity extends Activity implements LoaderManager.LoaderCallbacks {
 
     private boolean isNewTask = true;
     private long taskId;
@@ -44,7 +42,7 @@ public class EditActivity extends Activity implements LoaderManager.LoaderCallba
         setContentView(R.layout.activity_edit);
 
         Intent intent = getIntent();
-        taskId = intent.getLongExtra(MyActivity.EXTRA_MY_ID, 0L);
+        taskId = intent.getLongExtra(TasksActivity.EXTRA_MY_ID, 0L);
 
         myTaskBody = (EditText) findViewById(R.id.myMemoBody);
         myTaskUpdated = (TextView) findViewById(R.id.myMemoUpdated);
@@ -114,7 +112,7 @@ public class EditActivity extends Activity implements LoaderManager.LoaderCallba
                         String[] selectionArgs = new String[]{Long.toString(taskId)};
                         getContentResolver().delete(deleteUri, selection, selectionArgs);
 
-                        Intent intent = new Intent(EditActivity.this, MyActivity.class);
+                        Intent intent = new Intent(TaskEditActivity.this, TasksActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                     }
@@ -144,7 +142,7 @@ public class EditActivity extends Activity implements LoaderManager.LoaderCallba
                         Uri uri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, taskId);
                         getContentResolver().update(uri, values, MyContract.Tasks.COLUMN_ID + " = ?", new String[] { Long.toString(taskId) });
                     }
-                    Intent intent = new Intent(EditActivity.this, MyActivity.class);
+                    Intent intent = new Intent(TaskEditActivity.this, TasksActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 }
@@ -194,7 +192,6 @@ public class EditActivity extends Activity implements LoaderManager.LoaderCallba
             map.put(MyContract.TaskLists.COLUMN_TITLE, c.getString(c.getColumnIndex(MyContract.TaskLists.COLUMN_TITLE)));
             loadedLists.add(map);
         }
-        // swapする前にcursorを進めるとマズイ？
         adapter.swapCursor(c);
     }
 
