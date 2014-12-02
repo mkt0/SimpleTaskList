@@ -35,6 +35,7 @@ public class TaskEditActivity extends Activity implements LoaderManager.LoaderCa
     private String updated = "";
     private SimpleCursorAdapter adapter;
     private ArrayList<HashMap<String, String>> loadedLists;
+    private long listId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,8 @@ public class TaskEditActivity extends Activity implements LoaderManager.LoaderCa
         setContentView(R.layout.activity_edit);
 
         Intent intent = getIntent();
-        taskId = intent.getLongExtra(TasksActivity.EXTRA_MY_ID, 0L);
+        taskId = intent.getLongExtra(TasksActivity.EXTRA_TASK_ID, 0L);
+        listId = intent.getLongExtra(TasksActivity.EXTRA_LIST_ID, 1L);
 
         myTaskBody = (EditText) findViewById(R.id.myMemoBody);
         myTaskUpdated = (TextView) findViewById(R.id.myMemoUpdated);
@@ -101,6 +103,7 @@ public class TaskEditActivity extends Activity implements LoaderManager.LoaderCa
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_delete:
+                // TODO: implement with DialogFragment
                 AlertDialog.Builder deletionAlertDialog = new AlertDialog.Builder(this);
                 deletionAlertDialog.setTitle("Delete Task");
                 deletionAlertDialog.setMessage("Are you sure?");
@@ -129,6 +132,9 @@ public class TaskEditActivity extends Activity implements LoaderManager.LoaderCa
                     values.put(MyContract.Tasks.COLUMN_BODY, body);
                     if (isNewTask) {
                         // insert
+                        // associate with current list.
+                        values.put(MyContract.Tasks.COLUMN_LIST_ID, listId);
+                        Log.d("debug", "new task associated with listId: " + listId);
                         getContentResolver().insert(MyContentProvider.TASKS_URI, values);
                     } else {
                         // update
@@ -142,12 +148,14 @@ public class TaskEditActivity extends Activity implements LoaderManager.LoaderCa
                         Uri uri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, taskId);
                         getContentResolver().update(uri, values, MyContract.Tasks.COLUMN_ID + " = ?", new String[] { Long.toString(taskId) });
                     }
+                    // TODO: restore spinner selection item
                     Intent intent = new Intent(TaskEditActivity.this, TasksActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 }
                 break;
-            case R.id.action_set_as:
+            case R.id.action_associate:
+                // TODO: implement with DialogFragment.
                 AlertDialog.Builder listChoiceDialog = new AlertDialog.Builder(this);
                 listChoiceDialog.setTitle("Select List");
                 listChoiceDialog.setAdapter(adapter, new DialogInterface.OnClickListener() {

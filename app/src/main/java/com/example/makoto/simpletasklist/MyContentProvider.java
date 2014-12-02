@@ -117,6 +117,7 @@ public class MyContentProvider extends ContentProvider {
 
         switch (uriMatcher.match(uri)) {
             case TASK_ITEM:
+            case TASKS:
                 count = myDbHelper.getWritableDatabase().delete(
                         MyContract.Tasks.TABLE_NAME,
                         selection,

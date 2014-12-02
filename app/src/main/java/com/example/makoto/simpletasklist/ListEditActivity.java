@@ -117,15 +117,23 @@ public class ListEditActivity extends Activity {
                 }
                 break;
             case R.id.action_delete_list:
+                // TODO: implement with DialogFragment.
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
                 alertDialog.setTitle("Delete TaskList");
                 alertDialog.setMessage("Are you sure?");
                 alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Uri deleteUri = ContentUris.withAppendedId(MyContentProvider.TASK_LISTS_URI, listId);
-                        String selection = MyContract.TaskLists.COLUMN_ID + " = ?";
+                        // delete tasks associated with the list.
+                        Uri deleteUri = MyContentProvider.TASKS_URI;
+                        String selection = MyContract.Tasks.COLUMN_LIST_ID + " = ?";
                         String[] selectionArgs = new String[] { Long.toString(listId) };
+                        getContentResolver().delete(deleteUri, selection, selectionArgs);
+
+                        // delete the list.
+                        deleteUri = ContentUris.withAppendedId(MyContentProvider.TASK_LISTS_URI, listId);
+                        selection = MyContract.TaskLists.COLUMN_ID + " = ?";
+                        selectionArgs = new String[] { Long.toString(listId) };
                         getContentResolver().delete(deleteUri, selection, selectionArgs);
 
                         Intent intent = new Intent(ListEditActivity.this, ListsActivity.class);
