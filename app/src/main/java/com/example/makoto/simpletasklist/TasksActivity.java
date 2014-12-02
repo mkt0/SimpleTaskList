@@ -94,8 +94,10 @@ public class TasksActivity extends Activity implements LoaderManager.LoaderCallb
         });
 
         loadedLists = new ArrayList<HashMap<String, String>>();
-
-        getLoaderManager().initLoader(TASK_LOADER_ID, null, this);
+        Bundle bundle = new Bundle();
+        bundle.putString(BUNDLE_TASK_SELECTION, MyContract.Tasks.COLUMN_LIST_ID + " = ?");
+        bundle.putString(BUNDLE_TASK_SELECTION_ARGS, "1");
+        getLoaderManager().initLoader(TASK_LOADER_ID, bundle, this);
         getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
     }
 
@@ -146,7 +148,7 @@ public class TasksActivity extends Activity implements LoaderManager.LoaderCallb
                         MyContract.Tasks.COLUMN_ID,
                         MyContract.Tasks.COLUMN_BODY
                 };
-                if ( bundle != null && !(bundle.getString(BUNDLE_TASK_SELECTION_ARGS).equals("1")) ) {
+                if ( bundle != null ) {
                     selection = bundle.getString(BUNDLE_TASK_SELECTION);
                     selectionArgs = new String[] { bundle.getString(BUNDLE_TASK_SELECTION_ARGS) };
                     Log.d("debug", "got loader bundle!");
