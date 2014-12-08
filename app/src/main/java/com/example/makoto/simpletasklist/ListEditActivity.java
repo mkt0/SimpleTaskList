@@ -2,6 +2,7 @@ package com.example.makoto.simpletasklist;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -18,7 +20,9 @@ import android.widget.Toast;
 import java.util.Date;
 
 
-public class ListEditActivity extends Activity {
+public class ListEditActivity extends Activity implements MyAlertDialogFragment.MyAlertDialogFragmentCallbacks {
+
+    private static final String ALERT_DIALOG_FRAGMENT_TAG = "alertDialog";
 
     private long listId;
     private boolean isNewList;
@@ -117,31 +121,9 @@ public class ListEditActivity extends Activity {
                 }
                 break;
             case R.id.action_delete_list:
-                // TODO: implement with DialogFragment.
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-                alertDialog.setTitle("Delete TaskList");
-                alertDialog.setMessage("Are you sure?");
-                alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        // delete tasks associated with the list.
-                        Uri deleteUri = MyContentProvider.TASKS_URI;
-                        String selection = MyContract.Tasks.COLUMN_LIST_ID + " = ?";
-                        String[] selectionArgs = new String[] { Long.toString(listId) };
-                        getContentResolver().delete(deleteUri, selection, selectionArgs);
-
-                        // delete the list.
-                        deleteUri = ContentUris.withAppendedId(MyContentProvider.TASK_LISTS_URI, listId);
-                        selection = MyContract.TaskLists.COLUMN_ID + " = ?";
-                        selectionArgs = new String[] { Long.toString(listId) };
-                        getContentResolver().delete(deleteUri, selection, selectionArgs);
-
-                        Intent intent = new Intent(ListEditActivity.this, ListsActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                    }
-                });
-                alertDialog.create().show();
+                DialogFragment dialogFragment = MyAlertDialogFragment.newInstance(R.string.delete_list_alert_dialog_title);
+                // TODO: show associated tasks count in dialog message
+                dialogFragment.show(getFragmentManager(), ALERT_DIALOG_FRAGMENT_TAG);
                 break;
             case android.R.id.home:
                 break;
@@ -149,5 +131,31 @@ public class ListEditActivity extends Activity {
                 throw new IllegalArgumentException("Unknown Action!");
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPositiveClick() {
+        Log.i(ALERT_DIALOG_FRAGMENT_TAG, "Positive click!");
+
+        // delete tasks associated with the list.
+        Uri deleteUri = MyContentProvider.TASKS_URI;
+        String selection = MyContract.Tasks.COLUMN_LIST_ID + " = ?";
+        String[] selectionArgs = new String[] { Long.toString(listId) };
+        getContentResolver().delete(deleteUri, selection, selectionArgs);
+
+        // delete the list.
+        deleteUri = ContentUris.withAppendedId(MyContentProvider.TASK_LISTS_URI, listId);
+        selection = MyContract.TaskLists.COLUMN_ID + " = ?";
+        selectionArgs = new String[] { Long.toString(listId) };
+        getContentResolver().delete(deleteUri, selection, selectionArgs);
+
+        Intent intent = new Intent(ListEditActivity.this, ListsActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onNegativeClick() {
+        Log.i(ALERT_DIALOG_FRAGMENT_TAG, "Negative click!");
     }
 }

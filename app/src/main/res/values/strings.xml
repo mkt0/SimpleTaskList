@@ -18,5 +18,6 @@
     <string name="updated_activity_edit">Updated: --------</string>
     <string name="title_activity_tasks">TasksActivity</string>
     <string name="hello_world">Hello world!</string>
+    <string name="delete_list_alert_dialog_title">Are you sure removing the list?</string>
 
 </resources>
