@@ -25,7 +25,9 @@ import java.util.Date;
 import java.util.HashMap;
 
 
-public class TaskEditActivity extends Activity implements LoaderManager.LoaderCallbacks {
+public class TaskEditActivity extends Activity implements LoaderManager.LoaderCallbacks, MyAlertDialogFragment.MyAlertDialogFragmentCallbacks {
+
+    private static final String ALERT_DIALOG_FRAGMENT_TAG = "alertDialog";
 
     private boolean isNewTask = true;
     private long taskId;
@@ -103,24 +105,8 @@ public class TaskEditActivity extends Activity implements LoaderManager.LoaderCa
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_delete:
-                // TODO: implement with DialogFragment
-                AlertDialog.Builder deletionAlertDialog = new AlertDialog.Builder(this);
-                deletionAlertDialog.setTitle("Delete Task");
-                deletionAlertDialog.setMessage("Are you sure?");
-                deletionAlertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Uri deleteUri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, taskId);
-                        String selection = MyContract.Tasks.COLUMN_ID + " = ?";
-                        String[] selectionArgs = new String[]{Long.toString(taskId)};
-                        getContentResolver().delete(deleteUri, selection, selectionArgs);
-
-                        Intent intent = new Intent(TaskEditActivity.this, TasksActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                    }
-                });
-                deletionAlertDialog.create().show();
+                MyAlertDialogFragment deleteAlertDialog = MyAlertDialogFragment.newInstance(R.string.delete_list_alert_dialog_title);
+                deleteAlertDialog.show(getFragmentManager(), ALERT_DIALOG_FRAGMENT_TAG);
                 break;
             case R.id.action_save:
                 body = myTaskBody.getText().toString().trim();
@@ -206,5 +192,22 @@ public class TaskEditActivity extends Activity implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset(Loader loader) {
         adapter.swapCursor(null);
+    }
+
+    @Override
+    public void onPositiveClick() {
+        Uri deleteUri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, taskId);
+        String selection = MyContract.Tasks.COLUMN_ID + " = ?";
+        String[] selectionArgs = new String[]{Long.toString(taskId)};
+        getContentResolver().delete(deleteUri, selection, selectionArgs);
+
+        Intent intent = new Intent(TaskEditActivity.this, TasksActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onNegativeClick() {
+
     }
 }
