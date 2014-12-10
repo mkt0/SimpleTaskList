@@ -1,12 +1,10 @@
 package com.example.makoto.simpletasklist;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -20,14 +18,16 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 
-public class TaskEditActivity extends Activity implements LoaderManager.LoaderCallbacks, MyAlertDialogFragment.MyAlertDialogFragmentCallbacks {
+public class TaskEditActivity extends Activity implements
+        LoaderManager.LoaderCallbacks,
+        MyAlertDialogFragment.MyAlertDialogFragmentCallbacks,
+        ListSelectionDialogFragment.ListSelectionDialogCallbacks {
 
-    private static final String ALERT_DIALOG_FRAGMENT_TAG = "alertDialog";
+    private static final String DELETION_ALERT_DIALOG = "deletionAlertDialog";
+    private static final String LIST_SELECTION_DIALOG = "listSelectionDialog";
 
     private boolean isNewTask = true;
     private long taskId;
@@ -36,8 +36,8 @@ public class TaskEditActivity extends Activity implements LoaderManager.LoaderCa
     private String body = "";
     private String updated = "";
     private SimpleCursorAdapter adapter;
-    private ArrayList<HashMap<String, String>> loadedLists;
     private long listId;
+    private Bundle queryArgs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +83,7 @@ public class TaskEditActivity extends Activity implements LoaderManager.LoaderCa
         int[] to = new int[] { android.R.id.text1 };
         adapter = new SimpleCursorAdapter(this, android.R.layout.select_dialog_item, null, from, to, 0);
 
-        loadedLists = new ArrayList<HashMap<String, String>>();
+        queryArgs = new Bundle();
 
         getLoaderManager().initLoader(0, null, this);
     }
@@ -106,7 +106,7 @@ public class TaskEditActivity extends Activity implements LoaderManager.LoaderCa
         switch (item.getItemId()) {
             case R.id.action_delete:
                 MyAlertDialogFragment deleteAlertDialog = MyAlertDialogFragment.newInstance(R.string.delete_list_alert_dialog_title);
-                deleteAlertDialog.show(getFragmentManager(), ALERT_DIALOG_FRAGMENT_TAG);
+                deleteAlertDialog.show(getFragmentManager(), DELETION_ALERT_DIALOG);
                 break;
             case R.id.action_save:
                 body = myTaskBody.getText().toString().trim();
@@ -141,23 +141,11 @@ public class TaskEditActivity extends Activity implements LoaderManager.LoaderCa
                 }
                 break;
             case R.id.action_associate:
-                // TODO: implement with DialogFragment.
-                AlertDialog.Builder listChoiceDialog = new AlertDialog.Builder(this);
-                listChoiceDialog.setTitle("Select List");
-                listChoiceDialog.setAdapter(adapter, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Long listId = Long.valueOf(loadedLists.get(i).get(MyContract.TaskLists.COLUMN_ID));
-                        Uri uri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, taskId);
-                        ContentValues contentValues = new ContentValues();
-                        contentValues.put(MyContract.Tasks.COLUMN_LIST_ID, listId);
-                        String selection = MyContract.Tasks.COLUMN_ID + " = ?";
-                        String[] selectionArgs = new String[] { Long.toString(taskId) };
-                        getContentResolver().update(uri, contentValues, selection, selectionArgs);
-                        Log.d("DEBUG", "task:" + taskId + " associated to list:" + listId);
-                    }
-                });
-                listChoiceDialog.create().show();
+                ListSelectionDialogFragment dialogFragment = ListSelectionDialogFragment.newInstance(
+                        R.string.select_list_dialog_title,
+                        queryArgs
+                );
+                dialogFragment.show(getFragmentManager(), LIST_SELECTION_DIALOG);
                 break;
             case android.R.id.home:
                 break;
@@ -174,18 +162,23 @@ public class TaskEditActivity extends Activity implements LoaderManager.LoaderCa
                 MyContract.TaskLists.COLUMN_ID,
                 MyContract.TaskLists.COLUMN_TITLE
         };
-        return new CursorLoader(this, uri, projection, null, null, "updated desc");
+        String selection = null;
+        String[] selectionArgs = null;
+        String sortOrder = "updated desc";
+
+        // setup bundle for query in dialogFragment.
+        queryArgs.putParcelable(ListSelectionDialogFragment.QUERY_URI, uri);
+        queryArgs.putStringArray(ListSelectionDialogFragment.QUERY_PROJECTION, projection);
+        queryArgs.putString(ListSelectionDialogFragment.QUERY_SELECTION, selection);
+        queryArgs.putStringArray(ListSelectionDialogFragment.QUERY_SELECTION_ARGS, selectionArgs);
+        queryArgs.putString(ListSelectionDialogFragment.QUERY_SORT_ORDER, sortOrder);
+
+        return new CursorLoader(this, uri, projection, selection, selectionArgs, sortOrder);
     }
 
     @Override
     public void onLoadFinished(Loader loader, Object data) {
         Cursor c = (Cursor) data;
-        while (c.moveToNext()) {
-            HashMap<String, String> map = new HashMap<String, String>();
-            map.put(MyContract.TaskLists.COLUMN_ID, c.getString(c.getColumnIndex(MyContract.TaskLists.COLUMN_ID)));
-            map.put(MyContract.TaskLists.COLUMN_TITLE, c.getString(c.getColumnIndex(MyContract.TaskLists.COLUMN_TITLE)));
-            loadedLists.add(map);
-        }
         adapter.swapCursor(c);
     }
 
@@ -207,7 +200,17 @@ public class TaskEditActivity extends Activity implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void onNegativeClick() {
+    public void onNegativeClick() { }
 
+    @Override
+    public void onListSelectionDialogItemClick(int position, int id, String title) {
+        int newListId = id;
+        Uri uri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, taskId);
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MyContract.Tasks.COLUMN_LIST_ID, newListId);
+        String selection = MyContract.Tasks.COLUMN_ID + " = ?";
+        String[] selectionArgs = new String[] { Long.toString(taskId) };
+        getContentResolver().update(uri, contentValues, selection, selectionArgs);
+        Log.d("DEBUG", "task:" + taskId + " associated to list:" + newListId);
     }
 }
