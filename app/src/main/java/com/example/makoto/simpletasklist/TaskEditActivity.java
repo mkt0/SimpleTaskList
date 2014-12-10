@@ -1,12 +1,9 @@
 package com.example.makoto.simpletasklist;
 
 import android.app.Activity;
-import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,7 +11,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,7 +18,6 @@ import java.util.Date;
 
 
 public class TaskEditActivity extends Activity implements
-        LoaderManager.LoaderCallbacks,
         MyAlertDialogFragment.MyAlertDialogFragmentCallbacks,
         ListSelectionDialogFragment.ListSelectionDialogCallbacks {
 
@@ -35,7 +30,6 @@ public class TaskEditActivity extends Activity implements
     private TextView myTaskUpdated;
     private String body = "";
     private String updated = "";
-    private SimpleCursorAdapter adapter;
     private long listId;
     private Bundle queryArgs;
 
@@ -81,11 +75,9 @@ public class TaskEditActivity extends Activity implements
         }
         String[] from = new String[] { MyContract.TaskLists.COLUMN_TITLE };
         int[] to = new int[] { android.R.id.text1 };
-        adapter = new SimpleCursorAdapter(this, android.R.layout.select_dialog_item, null, from, to, 0);
 
         queryArgs = new Bundle();
 
-        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -141,6 +133,22 @@ public class TaskEditActivity extends Activity implements
                 }
                 break;
             case R.id.action_associate:
+                Uri uri = MyContentProvider.TASK_LISTS_URI;
+                String[] projection = new String[] {
+                        MyContract.TaskLists.COLUMN_ID,
+                        MyContract.TaskLists.COLUMN_TITLE
+                };
+                String selection = null;
+                String[] selectionArgs = null;
+                String sortOrder = "updated desc";
+
+                // setup bundle for query in dialogFragment.
+                queryArgs.putParcelable(ListSelectionDialogFragment.QUERY_URI, uri);
+                queryArgs.putStringArray(ListSelectionDialogFragment.QUERY_PROJECTION, projection);
+                queryArgs.putString(ListSelectionDialogFragment.QUERY_SELECTION, selection);
+                queryArgs.putStringArray(ListSelectionDialogFragment.QUERY_SELECTION_ARGS, selectionArgs);
+                queryArgs.putString(ListSelectionDialogFragment.QUERY_SORT_ORDER, sortOrder);
+
                 ListSelectionDialogFragment dialogFragment = ListSelectionDialogFragment.newInstance(
                         R.string.select_list_dialog_title,
                         queryArgs
@@ -153,38 +161,6 @@ public class TaskEditActivity extends Activity implements
                 throw new IllegalArgumentException("Unknown Action.");
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public Loader onCreateLoader(int i, Bundle bundle) {
-        Uri uri = MyContentProvider.TASK_LISTS_URI;
-        String[] projection = new String[] {
-                MyContract.TaskLists.COLUMN_ID,
-                MyContract.TaskLists.COLUMN_TITLE
-        };
-        String selection = null;
-        String[] selectionArgs = null;
-        String sortOrder = "updated desc";
-
-        // setup bundle for query in dialogFragment.
-        queryArgs.putParcelable(ListSelectionDialogFragment.QUERY_URI, uri);
-        queryArgs.putStringArray(ListSelectionDialogFragment.QUERY_PROJECTION, projection);
-        queryArgs.putString(ListSelectionDialogFragment.QUERY_SELECTION, selection);
-        queryArgs.putStringArray(ListSelectionDialogFragment.QUERY_SELECTION_ARGS, selectionArgs);
-        queryArgs.putString(ListSelectionDialogFragment.QUERY_SORT_ORDER, sortOrder);
-
-        return new CursorLoader(this, uri, projection, selection, selectionArgs, sortOrder);
-    }
-
-    @Override
-    public void onLoadFinished(Loader loader, Object data) {
-        Cursor c = (Cursor) data;
-        adapter.swapCursor(c);
-    }
-
-    @Override
-    public void onLoaderReset(Loader loader) {
-        adapter.swapCursor(null);
     }
 
     @Override
