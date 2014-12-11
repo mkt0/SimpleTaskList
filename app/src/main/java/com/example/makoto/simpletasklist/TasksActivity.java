@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class TasksActivity extends Activity implements LoaderManager.LoaderCallb
 
     public static final String EXTRA_TASK_ID = "com.example.makoto.simpletasklist.EXTRA_TASK_ID";
     public static final String EXTRA_LIST_ID = "com.example.makoto.simpletasklist.EXTRA_LIST_ID";
+    public static final String EXTRA_LIST_POSITION = "com.example.makoto.simpletasklist.EXTRA_LIST_POSITION";
     private static final int TASK_LOADER_ID = 0;
     private static final int LIST_LOADER_ID = 1;
     private static final String BUNDLE_TASK_SELECTION = "list_selection";
@@ -33,11 +35,16 @@ public class TasksActivity extends Activity implements LoaderManager.LoaderCallb
     private SimpleCursorAdapter taskListAdapter;
     private SpinnerAdapter spinnerAdapter;
     private long currentListId;
+    private int currentListPosition;
+    private boolean synthetic = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
+
+        Intent intent = getIntent();
+        final int receivedListPosition = intent.getIntExtra(EXTRA_LIST_POSITION, 0);
 
         // create SpinnerAdapter
         String[] listFrom = new String[] { MyContract.TaskLists.COLUMN_TITLE };
@@ -48,12 +55,20 @@ public class TasksActivity extends Activity implements LoaderManager.LoaderCallb
         ActionBar.OnNavigationListener onNavigationListener = new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int position, long itemId) {
+                if (synthetic) {
+                    synthetic = false;
+                    Log.d("debug", "synthetic NavigationItem selection is detected.");
+                    getActionBar().setSelectedNavigationItem(receivedListPosition);
+                    Log.d("debug", "Select NavigationItem(pos=" + receivedListPosition + ")");
+                    return true;
+                }
                 if (currentListId != itemId) {
                     Bundle bundle = new Bundle();
                     bundle.putString(BUNDLE_TASK_SELECTION, MyContract.Tasks.COLUMN_LIST_ID + " = ?");
                     bundle.putString(BUNDLE_TASK_SELECTION_ARGS, Long.toString(itemId));
                     getLoaderManager().restartLoader(TASK_LOADER_ID, bundle, TasksActivity.this);
                     currentListId = itemId;
+                    currentListPosition = position;
                     Log.d("debug", "Current listId: " + currentListId);
                 }
                 return false;
@@ -65,6 +80,7 @@ public class TasksActivity extends Activity implements LoaderManager.LoaderCallb
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setListNavigationCallbacks(spinnerAdapter, onNavigationListener);
+
 
         // set taskListAdapter to taskListView
         String[] taskFrom = new String[] { MyContract.Tasks.COLUMN_BODY };
@@ -80,7 +96,8 @@ public class TasksActivity extends Activity implements LoaderManager.LoaderCallb
                 Intent intent = new Intent(TasksActivity.this, TaskEditActivity.class);
                 intent.putExtra(EXTRA_TASK_ID, l);
                 intent.putExtra(EXTRA_LIST_ID, currentListId);
-                Log.d("debug", "Start TaskEditActivity bundles taskId: " + l + ", listId: " + currentListId);
+                intent.putExtra(EXTRA_LIST_POSITION, currentListPosition);
+                Log.d("debug", "Start TaskEditActivity bundles taskId: " + l + ", listId: " + currentListId + ", listPos: " + currentListPosition);
                 startActivity(intent);
             }
         });

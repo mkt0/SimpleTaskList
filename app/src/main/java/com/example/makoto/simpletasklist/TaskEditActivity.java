@@ -31,6 +31,7 @@ public class TaskEditActivity extends Activity implements
     private String body = "";
     private String updated = "";
     private long listId;
+    private int listPosition;
     private Bundle queryArgs;
 
     @Override
@@ -41,6 +42,8 @@ public class TaskEditActivity extends Activity implements
         Intent intent = getIntent();
         taskId = intent.getLongExtra(TasksActivity.EXTRA_TASK_ID, 0L);
         listId = intent.getLongExtra(TasksActivity.EXTRA_LIST_ID, 1L);
+        listPosition = intent.getIntExtra(TasksActivity.EXTRA_LIST_POSITION, 0);
+        Log.d("debug", "Create TaskEditActivity with listId: " + listId + ", listPos: " + listPosition);
 
         myTaskBody = (EditText) findViewById(R.id.myMemoBody);
         myTaskUpdated = (TextView) findViewById(R.id.myMemoUpdated);
@@ -126,9 +129,11 @@ public class TaskEditActivity extends Activity implements
                         Uri uri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, taskId);
                         getContentResolver().update(uri, values, MyContract.Tasks.COLUMN_ID + " = ?", new String[] { Long.toString(taskId) });
                     }
-                    // TODO: restore spinner selection item
+                    
                     Intent intent = new Intent(TaskEditActivity.this, TasksActivity.class);
+                    intent.putExtra(TasksActivity.EXTRA_LIST_POSITION, listPosition);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    Log.d("debug", "Start TasksActivity bundles listPos: " + listPosition);
                     startActivity(intent);
                 }
                 break;
