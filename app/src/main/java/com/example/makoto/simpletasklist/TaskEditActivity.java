@@ -129,7 +129,7 @@ public class TaskEditActivity extends Activity implements
                         Uri uri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, taskId);
                         getContentResolver().update(uri, values, MyContract.Tasks.COLUMN_ID + " = ?", new String[] { Long.toString(taskId) });
                     }
-                    
+
                     Intent intent = new Intent(TaskEditActivity.this, TasksActivity.class);
                     intent.putExtra(TasksActivity.EXTRA_LIST_POSITION, listPosition);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -24,6 +24,8 @@ import java.util.HashMap;
 
 public class TasksActivity extends Activity implements LoaderManager.LoaderCallbacks {
 
+    // TODO: show tasks count owned by each list in NavigationSpinner
+
     public static final String EXTRA_TASK_ID = "com.example.makoto.simpletasklist.EXTRA_TASK_ID";
     public static final String EXTRA_LIST_ID = "com.example.makoto.simpletasklist.EXTRA_LIST_ID";
     public static final String EXTRA_LIST_POSITION = "com.example.makoto.simpletasklist.EXTRA_LIST_POSITION";
