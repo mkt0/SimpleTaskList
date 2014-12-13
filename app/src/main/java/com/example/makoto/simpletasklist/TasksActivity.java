@@ -36,7 +36,7 @@ public class TasksActivity extends Activity implements LoaderManager.LoaderCallb
 
     private SimpleCursorAdapter taskListAdapter;
     private SpinnerAdapter spinnerAdapter;
-    private long currentListId;
+    private long currentListId = 1L;
     private int currentListPosition;
     private boolean synthetic = true;
 
@@ -62,6 +62,7 @@ public class TasksActivity extends Activity implements LoaderManager.LoaderCallb
                     Log.d("debug", "synthetic NavigationItem selection is detected.");
                     getActionBar().setSelectedNavigationItem(receivedListPosition);
                     Log.d("debug", "Select NavigationItem(pos=" + receivedListPosition + ")");
+                    Log.d("debug", "Current listId: " + currentListId);
                     return true;
                 }
                 if (currentListId != itemId) {

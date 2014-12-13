@@ -25,8 +25,6 @@ import java.util.ArrayList;
 
 public class ListsActivity extends Activity implements LoaderManager.LoaderCallbacks {
 
-    // TODO: リストが保持するアイテムの数をカッコ内に表示する。
-
     public static final String EXTRA_LIST_ID = "com.example.makoto.simpletasklist.EXTRA_LIST_ID";
     private static final int TASK_LOADER_ID = 0;
     private static final int LIST_LOADER_ID = 1;
