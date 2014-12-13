@@ -18,23 +18,16 @@ import android.widget.SimpleCursorAdapter;
  */
 public class ListSelectionDialogFragment extends DialogFragment implements LoaderManager.LoaderCallbacks {
 
-    public static final String QUERY_URI = "queryUri";
-    public static final String QUERY_PROJECTION = "queryProjection";
-    public static final String QUERY_SELECTION = "querySelection";
-    public static final String QUERY_SELECTION_ARGS = "querySelectionArgs";
-    public static final String QUERY_SORT_ORDER = "querySortOrder";
-
     private static final String ARG_TITLE = "titleArgument";
     private static final String ARG_QUERY = "queryArgument";
 
     private ListSelectionDialogCallbacks mCallbacks;
     private SimpleCursorAdapter adapter;
 
-    static ListSelectionDialogFragment newInstance(int title, Bundle queryArgs) {
+    static ListSelectionDialogFragment newInstance(int title) {
         ListSelectionDialogFragment fragment = new ListSelectionDialogFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_TITLE, title);
-        args.putBundle(ARG_QUERY, queryArgs);
         fragment.setArguments(args);
         return fragment;
     }
@@ -92,11 +85,15 @@ public class ListSelectionDialogFragment extends DialogFragment implements Loade
 
     @Override
     public Loader onCreateLoader(int i, Bundle bundle) {
-        Uri uri = bundle.getParcelable(QUERY_URI);
-        String[] projection = bundle.getStringArray(QUERY_PROJECTION);
-        String selection = bundle.getString(QUERY_SELECTION);
-        String[] selectionArgs = bundle.getStringArray(QUERY_SELECTION_ARGS);
-        String sortOrder = bundle.getString(QUERY_SORT_ORDER);
+        Uri uri = MyContentProvider.TASK_LISTS_URI;
+        String[] projection = new String[] {
+                MyContract.TaskLists.COLUMN_ID,
+                MyContract.TaskLists.COLUMN_TITLE
+        };
+        String selection = null;
+        String[] selectionArgs = null;
+        String sortOrder = "updated desc";
+
         return new CursorLoader(getActivity(), uri, projection, selection, selectionArgs, sortOrder);
     }
 

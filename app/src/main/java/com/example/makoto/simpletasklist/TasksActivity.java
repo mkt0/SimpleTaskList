@@ -3,10 +3,13 @@ package com.example.makoto.simpletasklist;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.LoaderManager;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -22,7 +25,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class TasksActivity extends Activity implements LoaderManager.LoaderCallbacks {
+public class TasksActivity extends Activity implements
+        LoaderManager.LoaderCallbacks,
+        ListSelectionDialogFragment.ListSelectionDialogCallbacks {
 
     // TODO: show tasks count owned by each list in NavigationSpinner
 
@@ -33,12 +38,14 @@ public class TasksActivity extends Activity implements LoaderManager.LoaderCallb
     private static final int LIST_LOADER_ID = 1;
     private static final String BUNDLE_TASK_SELECTION = "list_selection";
     private static final String BUNDLE_TASK_SELECTION_ARGS = "list_selection_args";
+    private static final String LIST_SELECTION_DIALOG_TAG = "list_selection_dialog_tag";
 
     private SimpleCursorAdapter taskListAdapter;
     private SpinnerAdapter spinnerAdapter;
     private long currentListId = 1L;
     private int currentListPosition;
     private boolean synthetic = true;
+    private long longClickedTaskId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +114,9 @@ public class TasksActivity extends Activity implements LoaderManager.LoaderCallb
         taskListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                // TODO:リスト選択ダイアログを表示させる。
+                longClickedTaskId = l;
+                ListSelectionDialogFragment listDialog = ListSelectionDialogFragment.newInstance(R.string.select_list_dialog_title);
+                listDialog.show(getFragmentManager(), LIST_SELECTION_DIALOG_TAG);
                 return true;
             }
         });
@@ -204,5 +213,17 @@ public class TasksActivity extends Activity implements LoaderManager.LoaderCallb
                 ((SimpleCursorAdapter) spinnerAdapter).swapCursor(null);
                 break;
         }
+    }
+
+    @Override
+    public void onListSelectionDialogItemClick(int position, int id, String title) {
+        int newListId = id;
+        Uri uri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, longClickedTaskId);
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MyContract.Tasks.COLUMN_LIST_ID, newListId);
+        String selection = MyContract.Tasks.COLUMN_ID + " = ?";
+        String[] selectionArgs = new String[] { Long.toString(longClickedTaskId) };
+        getContentResolver().update(uri, contentValues, selection, selectionArgs);
+        Log.d("DEBUG", "task:" + longClickedTaskId + " associated to list:" + newListId);
     }
 }

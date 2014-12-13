@@ -138,26 +138,7 @@ public class TaskEditActivity extends Activity implements
                 }
                 break;
             case R.id.action_associate:
-                Uri uri = MyContentProvider.TASK_LISTS_URI;
-                String[] projection = new String[] {
-                        MyContract.TaskLists.COLUMN_ID,
-                        MyContract.TaskLists.COLUMN_TITLE
-                };
-                String selection = null;
-                String[] selectionArgs = null;
-                String sortOrder = "updated desc";
-
-                // setup bundle for query in dialogFragment.
-                queryArgs.putParcelable(ListSelectionDialogFragment.QUERY_URI, uri);
-                queryArgs.putStringArray(ListSelectionDialogFragment.QUERY_PROJECTION, projection);
-                queryArgs.putString(ListSelectionDialogFragment.QUERY_SELECTION, selection);
-                queryArgs.putStringArray(ListSelectionDialogFragment.QUERY_SELECTION_ARGS, selectionArgs);
-                queryArgs.putString(ListSelectionDialogFragment.QUERY_SORT_ORDER, sortOrder);
-
-                ListSelectionDialogFragment dialogFragment = ListSelectionDialogFragment.newInstance(
-                        R.string.select_list_dialog_title,
-                        queryArgs
-                );
+                ListSelectionDialogFragment dialogFragment = ListSelectionDialogFragment.newInstance(R.string.select_list_dialog_title);
                 dialogFragment.show(getFragmentManager(), LIST_SELECTION_DIALOG);
                 break;
             case android.R.id.home:
