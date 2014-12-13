@@ -122,7 +122,6 @@ public class ListEditActivity extends Activity implements MyAlertDialogFragment.
                 break;
             case R.id.action_delete_list:
                 DialogFragment dialogFragment = MyAlertDialogFragment.newInstance(R.string.delete_list_alert_dialog_title);
-                // TODO: show associated tasks count in dialog message
                 dialogFragment.show(getFragmentManager(), ALERT_DIALOG_FRAGMENT_TAG);
                 break;
             case android.R.id.home:

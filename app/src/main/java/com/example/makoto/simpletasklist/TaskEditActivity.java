@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -76,11 +77,10 @@ public class TaskEditActivity extends Activity implements
             myTaskBody.setText(body);
             myTaskUpdated.setText(updated);
         }
-        String[] from = new String[] { MyContract.TaskLists.COLUMN_TITLE };
-        int[] to = new int[] { android.R.id.text1 };
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        myTaskBody.requestFocus();
 
         queryArgs = new Bundle();
-
     }
 
     @Override
