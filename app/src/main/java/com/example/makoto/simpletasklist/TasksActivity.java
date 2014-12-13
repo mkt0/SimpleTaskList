@@ -135,6 +135,7 @@ public class TasksActivity extends Activity implements LoaderManager.LoaderCallb
         if (id == R.id.action_add) {
             Intent intent = new Intent(this, TaskEditActivity.class);
             intent.putExtra(EXTRA_LIST_ID, currentListId);
+            intent.putExtra(EXTRA_LIST_POSITION, currentListPosition);
             startActivity(intent);
             return true;
         } else if (id == R.id.action_agenda) {
