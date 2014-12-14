@@ -11,10 +11,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.Date;
 
 
@@ -68,6 +68,10 @@ public class ListEditActivity extends Activity implements MyAlertDialogFragment.
             myListTitle.setText(listTitle);
             myListUpdated.setText(listUpdated);
         }
+
+        // show keyboard
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        myListTitle.requestFocus();
 
     }
 

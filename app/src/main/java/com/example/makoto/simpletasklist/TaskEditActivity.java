@@ -75,6 +75,8 @@ public class TaskEditActivity extends Activity implements
             myTaskBody.setText(body);
             myTaskUpdated.setText(updated);
         }
+
+        // show keyboard
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         myTaskBody.requestFocus();
 

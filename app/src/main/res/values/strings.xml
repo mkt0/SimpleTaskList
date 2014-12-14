@@ -19,6 +19,6 @@
     <string name="title_activity_tasks">TasksActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="delete_list_alert_dialog_title">Are you sure to remove?</string>
-    <string name="select_list_dialog_title">Select Category</string>
+    <string name="select_list_dialog_title">タスクを移動</string>
 
 </resources>
