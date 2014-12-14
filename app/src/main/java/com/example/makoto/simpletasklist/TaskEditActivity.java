@@ -157,6 +157,7 @@ public class TaskEditActivity extends Activity implements
         getContentResolver().delete(deleteUri, selection, selectionArgs);
 
         Intent intent = new Intent(TaskEditActivity.this, TasksActivity.class);
+        intent.putExtra(TasksActivity.EXTRA_LIST_POSITION, listPosition);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
