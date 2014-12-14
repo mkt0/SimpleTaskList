@@ -19,7 +19,8 @@
     <string name="title_activity_tasks">タスク一覧</string>
     <string name="updated_activity_edit">Updated: --------</string>
     <string name="hello_world">Hello world!</string>
-    <string name="delete_list_alert_dialog_title">削除しますか？</string>
+    <string name="delete_alert_dialog_title">削除しますか？</string>
+    <string name="delete_all_alert_dialog_title">全てのタスクを削除します。本当によろしいですか？</string>
     <string name="select_list_dialog_title">タスクを移動</string>
-
+    <string name="action_delete_all_tasks">タスクを全て削除</string>
 </resources>

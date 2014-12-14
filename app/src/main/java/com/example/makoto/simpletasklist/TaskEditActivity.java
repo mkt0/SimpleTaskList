@@ -99,8 +99,7 @@ public class TaskEditActivity extends Activity implements
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_delete:
-                // TODO: 削除後、ナビゲーションアイテムを元のアイテムにリストアする。
-                MyAlertDialogFragment deleteAlertDialog = MyAlertDialogFragment.newInstance(R.string.delete_list_alert_dialog_title);
+                MyAlertDialogFragment deleteAlertDialog = MyAlertDialogFragment.newInstance(R.string.delete_alert_dialog_title);
                 deleteAlertDialog.show(getFragmentManager(), DELETION_ALERT_DIALOG);
                 break;
             case R.id.action_save:
@@ -150,7 +149,7 @@ public class TaskEditActivity extends Activity implements
     }
 
     @Override
-    public void onPositiveClick() {
+    public void onMyAlertDialogPositiveClick() {
         Uri deleteUri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, taskId);
         String selection = MyContract.Tasks.COLUMN_ID + " = ?";
         String[] selectionArgs = new String[]{Long.toString(taskId)};
@@ -163,7 +162,7 @@ public class TaskEditActivity extends Activity implements
     }
 
     @Override
-    public void onNegativeClick() { }
+    public void onMyAlertDialogNegativeClick() { }
 
     @Override
     public void onListSelectionDialogItemClick(int position, int id, String title) {

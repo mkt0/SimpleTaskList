@@ -123,7 +123,7 @@ public class ListEditActivity extends Activity implements MyAlertDialogFragment.
                 }
                 break;
             case R.id.action_delete_list:
-                DialogFragment dialogFragment = MyAlertDialogFragment.newInstance(R.string.delete_list_alert_dialog_title);
+                DialogFragment dialogFragment = MyAlertDialogFragment.newInstance(R.string.delete_alert_dialog_title);
                 dialogFragment.show(getFragmentManager(), ALERT_DIALOG_FRAGMENT_TAG);
                 break;
             case android.R.id.home:
@@ -135,7 +135,7 @@ public class ListEditActivity extends Activity implements MyAlertDialogFragment.
     }
 
     @Override
-    public void onPositiveClick() {
+    public void onMyAlertDialogPositiveClick() {
         Log.i(ALERT_DIALOG_FRAGMENT_TAG, "Positive click!");
 
         // delete tasks associated with the list.
@@ -156,7 +156,7 @@ public class ListEditActivity extends Activity implements MyAlertDialogFragment.
     }
 
     @Override
-    public void onNegativeClick() {
+    public void onMyAlertDialogNegativeClick() {
         Log.i(ALERT_DIALOG_FRAGMENT_TAG, "Negative click!");
     }
 }

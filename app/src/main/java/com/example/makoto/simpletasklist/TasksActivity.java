@@ -25,11 +25,13 @@ import android.widget.SpinnerAdapter;
 
 public class TasksActivity extends Activity implements
         LoaderManager.LoaderCallbacks,
-        ListSelectionDialogFragment.ListSelectionDialogCallbacks {
+        ListSelectionDialogFragment.ListSelectionDialogCallbacks,
+        MyAlertDialogFragment.MyAlertDialogFragmentCallbacks {
 
     public static final String EXTRA_TASK_ID = "com.example.makoto.simpletasklist.EXTRA_TASK_ID";
     public static final String EXTRA_LIST_ID = "com.example.makoto.simpletasklist.EXTRA_LIST_ID";
     public static final String EXTRA_LIST_POSITION = "com.example.makoto.simpletasklist.EXTRA_LIST_POSITION";
+    public static final String DELETE_ALL_DIALOG_FRAGMENT = "deleteAllDialogFragment";
     private static final int TASK_LOADER_ID = 0;
     private static final int LIST_LOADER_ID = 1;
     private static final String BUNDLE_TASK_SELECTION = "list_selection";
@@ -65,6 +67,7 @@ public class TasksActivity extends Activity implements
             }
         }
 
+        // TODO: ナビゲーションリストの一番下に、新規リスト追加ボタン、リスト編集ボタンを設置する。
         spinnerAdapter = new ListsActivity.ListItemCursorAdapter(
                 getActionBar().getThemedContext(),
                 R.layout.navigation_dropdown_row,
@@ -167,20 +170,25 @@ public class TasksActivity extends Activity implements
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
 
-        // TODO: 全て削除ボタンを実装する
-        int id = item.getItemId();
-        if (id == R.id.action_add) {
-            Intent intent = new Intent(this, TaskEditActivity.class);
-            intent.putExtra(EXTRA_LIST_ID, currentListId);
-            intent.putExtra(EXTRA_LIST_POSITION, currentListPosition);
-            startActivity(intent);
-            return true;
-        } else if (id == R.id.action_agenda) {
-            Intent intent = new Intent(this, ListsActivity.class);
-            startActivity(intent);
-            return true;
-        } else if (id == R.id.action_test) {
-            getActionBar().setSelectedNavigationItem(1);
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.action_add:
+                intent = new Intent(this, TaskEditActivity.class);
+                intent.putExtra(EXTRA_LIST_ID, currentListId);
+                intent.putExtra(EXTRA_LIST_POSITION, currentListPosition);
+                startActivity(intent);
+                return true;
+            case R.id.action_agenda:
+                intent = new Intent(this, ListsActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.action_delete_all_tasks:
+                Log.d("app", "clicked delete all button.");
+                MyAlertDialogFragment deleteAllAlertDialog = MyAlertDialogFragment.newInstance(R.string.delete_all_alert_dialog_title);
+                deleteAllAlertDialog.show(getFragmentManager(), DELETE_ALL_DIALOG_FRAGMENT);
+            case R.id.action_test:
+                getActionBar().setSelectedNavigationItem(1);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -265,5 +273,20 @@ public class TasksActivity extends Activity implements
         Log.d("app", "task:" + longClickedTaskId + " associated to list:" + newListId);
 
         // TODO: update count label of current navigation item.
+    }
+
+    @Override
+    public void onMyAlertDialogPositiveClick() {
+        Log.d("app", "clicked dialog positive button.");
+        getContentResolver().delete(
+                MyContentProvider.TASKS_URI,
+                MyContract.Tasks.COLUMN_LIST_ID + " = ?",
+                new String[] { String.valueOf(currentListId) }
+        );
+    }
+
+    @Override
+    public void onMyAlertDialogNegativeClick() {
+        Log.d("app", "clicked dialog negative button.");
     }
 }

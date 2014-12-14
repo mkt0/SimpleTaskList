@@ -33,12 +33,12 @@ public class MyAlertDialogFragment extends DialogFragment {
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int whichButton) {
-                        mCallbacks.onPositiveClick();
+                        mCallbacks.onMyAlertDialogPositiveClick();
                     }
                 }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int whichButton) {
-                        mCallbacks.onNegativeClick();
+                        mCallbacks.onMyAlertDialogNegativeClick();
                     }
                 }).create();
     }
@@ -54,7 +54,7 @@ public class MyAlertDialogFragment extends DialogFragment {
     }
 
     public static interface MyAlertDialogFragmentCallbacks {
-        void onPositiveClick();
-        void onNegativeClick();
+        void onMyAlertDialogPositiveClick();
+        void onMyAlertDialogNegativeClick();
     }
 }
