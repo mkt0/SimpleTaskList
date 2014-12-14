@@ -14,13 +14,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 
 
 public class ListsActivity extends Activity implements LoaderManager.LoaderCallbacks {
@@ -30,7 +27,6 @@ public class ListsActivity extends Activity implements LoaderManager.LoaderCallb
     private static final int LIST_LOADER_ID = 1;
 
     private ListView listListView;
-//    private SimpleCursorAdapter adapter;
     private ListItemCursorAdapter adapter;
 
     @Override
@@ -38,23 +34,7 @@ public class ListsActivity extends Activity implements LoaderManager.LoaderCallb
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lists);
 
-        String[] from = new String[] {
-                MyContract.TaskLists.COLUMN_TITLE
-        };
-
-        int[] to = new int[] {
-                android.R.id.text1
-        };
-
-//        adapter = new SimpleCursorAdapter(
-//                this,
-//                android.R.layout.simple_list_item_1,
-//                null,
-//                from,
-//                to,
-//                0
-//        );
-        adapter = new ListItemCursorAdapter(this, R.layout.row, null, 0);
+        adapter = new ListItemCursorAdapter(this, R.layout.activity_lists_row, null, 0);
 
         listListView = (ListView) findViewById(R.id.listListView);
         listListView.setAdapter(adapter);
@@ -133,27 +113,8 @@ public class ListsActivity extends Activity implements LoaderManager.LoaderCallb
             countView = (TextView) v.findViewById(R.id.countText);
         }
     }
-    public class ListItem {
-        private String title;
-        private int count;
 
-        public int getCount() {
-            return count;
-        }
-
-        public void setCount(int count) {
-            this.count = count;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-    }
-    public class ListItemCursorAdapter extends CursorAdapter {
+    public static class ListItemCursorAdapter extends CursorAdapter {
 
         private LayoutInflater inflater;
         private final int resource;
@@ -179,7 +140,7 @@ public class ListsActivity extends Activity implements LoaderManager.LoaderCallb
 
             String title = cursor.getString(cursor.getColumnIndex(MyContract.TaskLists.COLUMN_TITLE));
             int id = cursor.getInt(cursor.getColumnIndex(MyContract.TaskLists.COLUMN_ID));
-            int count = getContentResolver().query(
+            int count = context.getContentResolver().query(
                     MyContentProvider.TASKS_URI,
                     new String[] { MyContract.Tasks.COLUMN_ID },
                     MyContract.Tasks.COLUMN_LIST_ID + " = ?",

@@ -14,7 +14,6 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.Date;
 
 
@@ -44,7 +43,7 @@ public class TaskEditActivity extends Activity implements
         taskId = intent.getLongExtra(TasksActivity.EXTRA_TASK_ID, 0L);
         listId = intent.getLongExtra(TasksActivity.EXTRA_LIST_ID, 1L);
         listPosition = intent.getIntExtra(TasksActivity.EXTRA_LIST_POSITION, 0);
-        Log.d("debug", "Create TaskEditActivity with listId: " + listId + ", listPos: " + listPosition);
+        Log.d("app", "Create TaskEditActivity with listId: " + listId + ", listPos: " + listPosition);
 
         myTaskBody = (EditText) findViewById(R.id.myMemoBody);
         myTaskUpdated = (TextView) findViewById(R.id.myMemoUpdated);
@@ -115,7 +114,7 @@ public class TaskEditActivity extends Activity implements
                         // insert
                         // associate with current list.
                         values.put(MyContract.Tasks.COLUMN_LIST_ID, listId);
-                        Log.d("debug", "new task associated with listId: " + listId);
+                        Log.d("app", "new task associated with listId: " + listId);
                         getContentResolver().insert(MyContentProvider.TASKS_URI, values);
                     } else {
                         // update
@@ -133,7 +132,7 @@ public class TaskEditActivity extends Activity implements
                     Intent intent = new Intent(TaskEditActivity.this, TasksActivity.class);
                     intent.putExtra(TasksActivity.EXTRA_LIST_POSITION, listPosition);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    Log.d("debug", "Start TasksActivity bundles listPos: " + listPosition);
+                    Log.d("app", "Start TasksActivity bundles listPos: " + listPosition);
                     startActivity(intent);
                 }
                 break;
@@ -173,6 +172,6 @@ public class TaskEditActivity extends Activity implements
         String selection = MyContract.Tasks.COLUMN_ID + " = ?";
         String[] selectionArgs = new String[] { Long.toString(taskId) };
         getContentResolver().update(uri, contentValues, selection, selectionArgs);
-        Log.d("DEBUG", "task:" + taskId + " associated to list:" + newListId);
+        Log.d("app", "task:" + taskId + " associated to list:" + newListId);
     }
 }

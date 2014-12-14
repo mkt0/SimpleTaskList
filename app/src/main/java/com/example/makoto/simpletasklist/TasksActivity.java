@@ -16,20 +16,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class TasksActivity extends Activity implements
         LoaderManager.LoaderCallbacks,
         ListSelectionDialogFragment.ListSelectionDialogCallbacks {
-
-    // TODO: show tasks count owned by each list in NavigationSpinner
 
     public static final String EXTRA_TASK_ID = "com.example.makoto.simpletasklist.EXTRA_TASK_ID";
     public static final String EXTRA_LIST_ID = "com.example.makoto.simpletasklist.EXTRA_LIST_ID";
@@ -56,9 +52,11 @@ public class TasksActivity extends Activity implements
         final int receivedListPosition = intent.getIntExtra(EXTRA_LIST_POSITION, 0);
 
         // create SpinnerAdapter
-        String[] listFrom = new String[] { MyContract.TaskLists.COLUMN_TITLE };
-        int[] listTo = new int[] { android.R.id.text1 };
-        spinnerAdapter = new SimpleCursorAdapter(getActionBar().getThemedContext(), android.R.layout.simple_spinner_dropdown_item, null, listFrom, listTo, 0);
+//        String[] listFrom = new String[] { MyContract.TaskLists.COLUMN_TITLE };
+//        int[] listTo = new int[] { android.R.id.text1 };
+//        spinnerAdapter = new SimpleCursorAdapter(getActionBar().getThemedContext(), android.R.layout.simple_spinner_dropdown_item, null, listFrom, listTo, 0);
+        spinnerAdapter = new ListsActivity.ListItemCursorAdapter(getActionBar().getThemedContext(), R.layout.navigation_dropdown_row, null, 0);
+
 
         // implement OnNavigationListener callback
         ActionBar.OnNavigationListener onNavigationListener = new ActionBar.OnNavigationListener() {
@@ -66,10 +64,10 @@ public class TasksActivity extends Activity implements
             public boolean onNavigationItemSelected(int position, long itemId) {
                 if (synthetic) {
                     synthetic = false;
-                    Log.d("debug", "synthetic NavigationItem selection is detected.");
+                    Log.d("app", "synthetic NavigationItem selection is detected.");
                     getActionBar().setSelectedNavigationItem(receivedListPosition);
-                    Log.d("debug", "Select NavigationItem(pos=" + receivedListPosition + ")");
-                    Log.d("debug", "Current listId: " + currentListId);
+                    Log.d("app", "Select NavigationItem(pos=" + receivedListPosition + ")");
+                    Log.d("app", "Current listId: " + currentListId);
                     return true;
                 }
                 if (currentListId != itemId) {
@@ -79,7 +77,7 @@ public class TasksActivity extends Activity implements
                     getLoaderManager().restartLoader(TASK_LOADER_ID, bundle, TasksActivity.this);
                     currentListId = itemId;
                     currentListPosition = position;
-                    Log.d("debug", "Current listId: " + currentListId);
+                    Log.d("app", "Current listId: " + currentListId);
                 }
                 return false;
             }
@@ -107,7 +105,7 @@ public class TasksActivity extends Activity implements
                 intent.putExtra(EXTRA_TASK_ID, l);
                 intent.putExtra(EXTRA_LIST_ID, currentListId);
                 intent.putExtra(EXTRA_LIST_POSITION, currentListPosition);
-                Log.d("debug", "Start TaskEditActivity bundles taskId: " + l + ", listId: " + currentListId + ", listPos: " + currentListPosition);
+                Log.d("app", "Start TaskEditActivity bundles taskId: " + l + ", listId: " + currentListId + ", listPos: " + currentListPosition);
                 startActivity(intent);
             }
         });
@@ -194,11 +192,11 @@ public class TasksActivity extends Activity implements
     public void onLoadFinished(Loader loader, Object cursor) {
         switch (loader.getId()) {
             case TASK_LOADER_ID:
-                taskListAdapter.swapCursor((android.database.Cursor) cursor);
+                taskListAdapter.swapCursor((Cursor) cursor);
                 break;
             case LIST_LOADER_ID:
                 Cursor c = (Cursor) cursor;
-                ((SimpleCursorAdapter) spinnerAdapter).swapCursor(c);
+                ((CursorAdapter) spinnerAdapter).swapCursor(c);
                 break;
         }
     }
@@ -210,7 +208,7 @@ public class TasksActivity extends Activity implements
                 taskListAdapter.swapCursor(null);
                 break;
             case LIST_LOADER_ID:
-                ((SimpleCursorAdapter) spinnerAdapter).swapCursor(null);
+                ((CursorAdapter) spinnerAdapter).swapCursor(null);
                 break;
         }
     }
@@ -224,6 +222,6 @@ public class TasksActivity extends Activity implements
         String selection = MyContract.Tasks.COLUMN_ID + " = ?";
         String[] selectionArgs = new String[] { Long.toString(longClickedTaskId) };
         getContentResolver().update(uri, contentValues, selection, selectionArgs);
-        Log.d("DEBUG", "task:" + longClickedTaskId + " associated to list:" + newListId);
+        Log.d("app", "task:" + longClickedTaskId + " associated to list:" + newListId);
     }
 }
