@@ -80,7 +80,7 @@ public class ListsActivity extends Activity implements LoaderManager.LoaderCallb
                         MyContract.TaskLists.COLUMN_ID,
                         MyContract.TaskLists.COLUMN_TITLE
                 };
-                return new CursorLoader(this, MyContentProvider.TASK_LISTS_URI, projection, null, null, "updated desc");
+                return new CursorLoader(this, MyContentProvider.TASK_LISTS_URI, projection, null, null, null);
             case TASK_LOADER_ID:
                 return null;
         }

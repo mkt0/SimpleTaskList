@@ -51,10 +51,6 @@ public class TasksActivity extends Activity implements
         Intent intent = getIntent();
         final int receivedListPosition = intent.getIntExtra(EXTRA_LIST_POSITION, 0);
 
-        // create SpinnerAdapter
-//        String[] listFrom = new String[] { MyContract.TaskLists.COLUMN_TITLE };
-//        int[] listTo = new int[] { android.R.id.text1 };
-//        spinnerAdapter = new SimpleCursorAdapter(getActionBar().getThemedContext(), android.R.layout.simple_spinner_dropdown_item, null, listFrom, listTo, 0);
         spinnerAdapter = new ListsActivity.ListItemCursorAdapter(getActionBar().getThemedContext(), R.layout.navigation_dropdown_row, null, 0);
 
 
@@ -113,7 +109,7 @@ public class TasksActivity extends Activity implements
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 longClickedTaskId = l;
-                ListSelectionDialogFragment listDialog = ListSelectionDialogFragment.newInstance(R.string.select_list_dialog_title);
+                ListSelectionDialogFragment listDialog = ListSelectionDialogFragment.newInstance(R.string.select_list_dialog_title, currentListId);
                 listDialog.show(getFragmentManager(), LIST_SELECTION_DIALOG_TAG);
                 return true;
             }
@@ -158,6 +154,7 @@ public class TasksActivity extends Activity implements
         String[] projection;
         String selection = null;
         String[] selectionArgs = null;
+        String sortOrder = null;
 
         switch (loaderId) {
             case TASK_LOADER_ID:
@@ -170,7 +167,14 @@ public class TasksActivity extends Activity implements
                     selectionArgs = new String[] { bundle.getString(BUNDLE_TASK_SELECTION_ARGS) };
                 }
 
-                return new CursorLoader(this, MyContentProvider.TASKS_URI, projection, selection, selectionArgs, "updated desc");
+                return new CursorLoader(
+                        this,
+                        MyContentProvider.TASKS_URI,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        sortOrder
+                );
             case LIST_LOADER_ID:
                 projection = new String[] {
                         MyContract.TaskLists.COLUMN_ID,
@@ -182,7 +186,7 @@ public class TasksActivity extends Activity implements
                         projection,
                         null,
                         null,
-                        MyContract.TaskLists.COLUMN_ORDER + " asc"
+                        sortOrder
                 );
         }
         return null;
@@ -223,5 +227,7 @@ public class TasksActivity extends Activity implements
         String[] selectionArgs = new String[] { Long.toString(longClickedTaskId) };
         getContentResolver().update(uri, contentValues, selection, selectionArgs);
         Log.d("app", "task:" + longClickedTaskId + " associated to list:" + newListId);
+
+        // TODO: update count label of current navigation item.
     }
 }

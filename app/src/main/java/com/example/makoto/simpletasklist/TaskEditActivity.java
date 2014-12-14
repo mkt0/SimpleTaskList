@@ -32,7 +32,6 @@ public class TaskEditActivity extends Activity implements
     private String updated = "";
     private long listId;
     private int listPosition;
-    private Bundle queryArgs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +78,6 @@ public class TaskEditActivity extends Activity implements
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         myTaskBody.requestFocus();
 
-        queryArgs = new Bundle();
     }
 
     @Override
@@ -137,7 +135,7 @@ public class TaskEditActivity extends Activity implements
                 }
                 break;
             case R.id.action_associate:
-                ListSelectionDialogFragment dialogFragment = ListSelectionDialogFragment.newInstance(R.string.select_list_dialog_title);
+                ListSelectionDialogFragment dialogFragment = ListSelectionDialogFragment.newInstance(R.string.select_list_dialog_title, listId);
                 dialogFragment.show(getFragmentManager(), LIST_SELECTION_DIALOG);
                 break;
             case android.R.id.home:

@@ -19,15 +19,16 @@ import android.widget.SimpleCursorAdapter;
 public class ListSelectionDialogFragment extends DialogFragment implements LoaderManager.LoaderCallbacks {
 
     private static final String ARG_TITLE = "titleArgument";
-    private static final String ARG_QUERY = "queryArgument";
+    private static final String ARG_NAVIGATION_ITEM = "navigationItemArgument";
 
     private ListSelectionDialogCallbacks mCallbacks;
     private SimpleCursorAdapter adapter;
 
-    static ListSelectionDialogFragment newInstance(int title) {
+    static ListSelectionDialogFragment newInstance(int title, long navigationItemId) {
         ListSelectionDialogFragment fragment = new ListSelectionDialogFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_TITLE, title);
+        args.putLong(ARG_NAVIGATION_ITEM, navigationItemId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -45,14 +46,14 @@ public class ListSelectionDialogFragment extends DialogFragment implements Loade
                 0
         );
 
-        Bundle queryArgs = getArguments().getBundle(ARG_QUERY);
-        getLoaderManager().restartLoader(0, queryArgs, this);
+        getLoaderManager().restartLoader(0, null, this);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         int dialogTitle = getArguments().getInt(ARG_TITLE);
+
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity())
                 .setIcon(android.R.drawable.ic_menu_set_as)
@@ -90,9 +91,9 @@ public class ListSelectionDialogFragment extends DialogFragment implements Loade
                 MyContract.TaskLists.COLUMN_ID,
                 MyContract.TaskLists.COLUMN_TITLE
         };
-        String selection = null;
-        String[] selectionArgs = null;
-        String sortOrder = "updated desc";
+        String selection = MyContract.TaskLists.COLUMN_ID + " <> ?";
+        String[] selectionArgs = new String[] { String.valueOf(getArguments().getLong(ARG_NAVIGATION_ITEM)) };
+        String sortOrder = null;
 
         return new CursorLoader(getActivity(), uri, projection, selection, selectionArgs, sortOrder);
     }
