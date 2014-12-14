@@ -35,12 +35,15 @@ public class TasksActivity extends Activity implements
     private static final String BUNDLE_TASK_SELECTION = "list_selection";
     private static final String BUNDLE_TASK_SELECTION_ARGS = "list_selection_args";
     private static final String LIST_SELECTION_DIALOG_TAG = "list_selection_dialog_tag";
+    private static final String INSTANCE_STATE_NAVIGATION_ITEM_POSITION = "navigationItemPosition";
+    private static final String INSTANCE_STATE_NAVIGATION_ITEM_ID = "navigationItemId";
 
     private SimpleCursorAdapter taskListAdapter;
     private SpinnerAdapter spinnerAdapter;
-    private long currentListId = 1L;
+    private long currentListId;
     private int currentListPosition;
-    private boolean synthetic = true;
+    private int receivedListPosition;
+    private boolean synthetic;
     private long longClickedTaskId;
 
     @Override
@@ -49,21 +52,41 @@ public class TasksActivity extends Activity implements
         setContentView(R.layout.activity_my);
 
         Intent intent = getIntent();
-        final int receivedListPosition = intent.getIntExtra(EXTRA_LIST_POSITION, 0);
+        receivedListPosition = intent.getIntExtra(EXTRA_LIST_POSITION, -1);
+        Log.d("app", "Nav item Position received from intent: " + receivedListPosition);
 
-        spinnerAdapter = new ListsActivity.ListItemCursorAdapter(getActionBar().getThemedContext(), R.layout.navigation_dropdown_row, null, 0);
+        if (receivedListPosition == -1) {
+            if (savedInstanceState != null) {
+                receivedListPosition = savedInstanceState.getInt(INSTANCE_STATE_NAVIGATION_ITEM_POSITION);
+                Log.d("app", "Nav item Position received from instance state: " + receivedListPosition);
+            } else {
+                receivedListPosition = 0;
+                Log.d("app", "Nav item Position is default: " + receivedListPosition);
+            }
+        }
 
+        spinnerAdapter = new ListsActivity.ListItemCursorAdapter(
+                getActionBar().getThemedContext(),
+                R.layout.navigation_dropdown_row,
+                null,
+                0
+        );
+
+        synthetic = true;
 
         // implement OnNavigationListener callback
         ActionBar.OnNavigationListener onNavigationListener = new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int position, long itemId) {
+                Log.d("app", "fired onNavigationItemSelected");
                 if (synthetic) {
                     synthetic = false;
                     Log.d("app", "synthetic NavigationItem selection is detected.");
                     getActionBar().setSelectedNavigationItem(receivedListPosition);
-                    Log.d("app", "Select NavigationItem(pos=" + receivedListPosition + ")");
-                    Log.d("app", "Current listId: " + currentListId);
+                    Log.d("app", "select NavigationItem(pos=" + receivedListPosition + ")");
+                    currentListPosition = receivedListPosition;
+                    currentListId = itemId;
+                    Log.d("app", "set current listId: " + currentListId + ", pos: " + currentListPosition);
                     return true;
                 }
                 if (currentListId != itemId) {
@@ -72,10 +95,11 @@ public class TasksActivity extends Activity implements
                     bundle.putString(BUNDLE_TASK_SELECTION_ARGS, Long.toString(itemId));
                     getLoaderManager().restartLoader(TASK_LOADER_ID, bundle, TasksActivity.this);
                     currentListId = itemId;
+                    Log.d("app", "set current listId: " + currentListId);
                     currentListPosition = position;
-                    Log.d("app", "Current listId: " + currentListId);
+                    Log.d("app", "set current listPosition: " + currentListPosition);
                 }
-                return false;
+                return true;
             }
         };
 
@@ -123,6 +147,14 @@ public class TasksActivity extends Activity implements
     }
 
     @Override
+    protected  void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(INSTANCE_STATE_NAVIGATION_ITEM_POSITION, currentListPosition);
+        outState.putLong(INSTANCE_STATE_NAVIGATION_ITEM_ID, currentListId);
+        Log.d("app", "saved instance state; pos=" + currentListPosition + ", id=" + currentListId);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.my, menu);
@@ -145,6 +177,8 @@ public class TasksActivity extends Activity implements
             Intent intent = new Intent(this, ListsActivity.class);
             startActivity(intent);
             return true;
+        } else if (id == R.id.action_test) {
+            getActionBar().setSelectedNavigationItem(1);
         }
         return super.onOptionsItemSelected(item);
     }

@@ -99,6 +99,7 @@ public class TaskEditActivity extends Activity implements
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_delete:
+                // TODO: 削除後、ナビゲーションアイテムを元のアイテムにリストアする。
                 MyAlertDialogFragment deleteAlertDialog = MyAlertDialogFragment.newInstance(R.string.delete_list_alert_dialog_title);
                 deleteAlertDialog.show(getFragmentManager(), DELETION_ALERT_DIALOG);
                 break;
