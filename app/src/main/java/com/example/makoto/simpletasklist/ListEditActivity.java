@@ -43,9 +43,9 @@ public class ListEditActivity extends Activity implements MyAlertDialogFragment.
         isNewList = listId == 0L ? true : false;
 
         if (isNewList) {
-            getActionBar().setTitle("New List");
+            getActionBar().setTitle(R.string.title_activity_edit_list_new);
         } else {
-            getActionBar().setTitle("Edit List");
+            getActionBar().setTitle(R.string.title_activity_edit_list);
             Uri uri = ContentUris.withAppendedId(MyContentProvider.TASK_LISTS_URI, listId);
             String[] projection = new String[] {
                     MyContract.TaskLists.COLUMN_TITLE,

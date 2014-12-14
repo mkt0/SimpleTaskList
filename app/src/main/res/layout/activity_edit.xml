@@ -10,7 +10,7 @@
         android:layout_weight="1"
         android:gravity="top"
         android:inputType="textNoSuggestions|textMultiLine"
-        android:hint="@string/body_hint_activity_edit"
+        android:hint="@string/hint_body_activity_edit"
         android:id="@+id/myMemoBody" />
 
     <TextView

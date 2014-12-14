@@ -50,9 +50,9 @@ public class TaskEditActivity extends Activity implements
         isNewTask = taskId == 0L ? true : false;
 
         if (isNewTask) {
-            getActionBar().setTitle("New Task");
+            getActionBar().setTitle(R.string.title_activity_edit_new);
         } else {
-            getActionBar().setTitle("Edit Task");
+            getActionBar().setTitle(R.string.title_activity_edit);
             Uri uri = ContentUris.withAppendedId(MyContentProvider.TASKS_URI, taskId);
             String[] projection = new String[] {
                     MyContract.Tasks.COLUMN_BODY,

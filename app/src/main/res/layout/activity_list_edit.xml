@@ -10,7 +10,7 @@
         android:layout_weight="1"
         android:gravity="top"
         android:inputType="textNoSuggestions|textMultiLine"
-        android:hint="@string/title_hint_activity_list_edit"
+        android:hint="@string/hint_title_activity_list_edit"
         android:id="@+id/listTitle" />
 
     <TextView
