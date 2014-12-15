@@ -174,5 +174,10 @@ public class TaskEditActivity extends Activity implements
         String[] selectionArgs = new String[] { Long.toString(taskId) };
         getContentResolver().update(uri, contentValues, selection, selectionArgs);
         Log.d("app", "task:" + taskId + " associated to list:" + newListId);
+
+        Intent intent = new Intent(TaskEditActivity.this, TasksActivity.class);
+        intent.putExtra(TasksActivity.EXTRA_LIST_POSITION, listPosition);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 }
