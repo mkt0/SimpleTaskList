@@ -67,7 +67,6 @@ public class TasksActivity extends Activity implements
             }
         }
 
-        // TODO: ナビゲーションリストの一番下に、新規リスト追加ボタン、リスト編集ボタンを設置する。
         spinnerAdapter = new ListsActivity.ListItemCursorAdapter(
                 getActionBar().getThemedContext(),
                 R.layout.navigation_dropdown_row,
@@ -92,7 +91,7 @@ public class TasksActivity extends Activity implements
                     Log.d("app", "set current listId: " + currentListId + ", pos: " + currentListPosition);
                     return true;
                 }
-                if (currentListId != itemId) {
+//                if (currentListId != itemId) {
                     Bundle bundle = new Bundle();
                     bundle.putString(BUNDLE_TASK_SELECTION, MyContract.Tasks.COLUMN_LIST_ID + " = ?");
                     bundle.putString(BUNDLE_TASK_SELECTION_ARGS, Long.toString(itemId));
@@ -101,7 +100,7 @@ public class TasksActivity extends Activity implements
                     Log.d("app", "set current listId: " + currentListId);
                     currentListPosition = position;
                     Log.d("app", "set current listPosition: " + currentListPosition);
-                }
+//                }
                 return true;
             }
         };
@@ -272,8 +271,8 @@ public class TasksActivity extends Activity implements
         String[] selectionArgs = new String[] { Long.toString(longClickedTaskId) };
         getContentResolver().update(uri, contentValues, selection, selectionArgs);
         Log.d("app", "task:" + longClickedTaskId + " associated to list:" + newListId);
-
         // TODO: update count label of current navigation item.
+
     }
 
     @Override

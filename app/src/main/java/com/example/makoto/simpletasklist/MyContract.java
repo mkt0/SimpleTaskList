@@ -27,7 +27,7 @@ public class MyContract {
         public static final String INIT_TABLE =
                 "INSERT INTO " + TABLE_NAME +
                 " ( " + COLUMN_BODY +
-                " ) VALUES ( 'task1' ), ( 'task2' ), ( 'task3' )";
+                " ) VALUES ( 'やること１' ), ( 'やること２' ), ( 'やること３' )";
 
 
     }
@@ -51,7 +51,7 @@ public class MyContract {
         public static final String INIT_TABLE =
                 "INSERT INTO " + TABLE_NAME +
                         " ( " + COLUMN_TITLE + ", " + COLUMN_ORDER +
-                        " ) VALUES ( 'Inbox', 0 ), ( 'Trash', 1000 ), ( 'Finished', 100 )";
+                        " ) VALUES ( '未分類', 0 ), ( 'ゴミ箱', 1000 ), ( '完了済み', 100 )";
 
 
     }

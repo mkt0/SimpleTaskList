@@ -123,7 +123,12 @@ public class ListEditActivity extends Activity implements MyAlertDialogFragment.
                 }
                 break;
             case R.id.action_delete_list:
-                DialogFragment dialogFragment = MyAlertDialogFragment.newInstance(R.string.delete_alert_dialog_title);
+                if (listId == 1) {
+                    toast.setText(R.string.toast_unable_to_remove_default_list);
+                    toast.show();
+                    break;
+                }
+                DialogFragment dialogFragment = MyAlertDialogFragment.newInstance(R.string.delete_list_alert_dialog_title);
                 dialogFragment.show(getFragmentManager(), ALERT_DIALOG_FRAGMENT_TAG);
                 break;
             case android.R.id.home:
