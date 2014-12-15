@@ -186,6 +186,7 @@ public class TasksActivity extends Activity implements
                 Log.d("app", "clicked delete all button.");
                 MyAlertDialogFragment deleteAllAlertDialog = MyAlertDialogFragment.newInstance(R.string.delete_all_alert_dialog_title);
                 deleteAllAlertDialog.show(getFragmentManager(), DELETE_ALL_DIALOG_FRAGMENT);
+                return true;
             case R.id.action_test:
                 getActionBar().setSelectedNavigationItem(1);
                 return true;
