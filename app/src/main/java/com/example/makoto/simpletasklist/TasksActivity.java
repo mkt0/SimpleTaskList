@@ -21,12 +21,13 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.SpinnerAdapter;
 
-
-
 public class TasksActivity extends Activity implements
         LoaderManager.LoaderCallbacks,
         ListSelectionDialogFragment.ListSelectionDialogCallbacks,
         MyAlertDialogFragment.MyAlertDialogFragmentCallbacks {
+
+    // TODO: 各タスクにチェックボックスを付ける？
+    // TODO: タスクの順番を並べ替えられるようにする？
 
     public static final String EXTRA_TASK_ID = "com.example.makoto.simpletasklist.EXTRA_TASK_ID";
     public static final String EXTRA_LIST_ID = "com.example.makoto.simpletasklist.EXTRA_LIST_ID";
@@ -186,9 +187,6 @@ public class TasksActivity extends Activity implements
                 MyAlertDialogFragment deleteAllAlertDialog = MyAlertDialogFragment.newInstance(R.string.delete_all_alert_dialog_title);
                 deleteAllAlertDialog.show(getFragmentManager(), DELETE_ALL_DIALOG_FRAGMENT);
                 return true;
-            case R.id.action_test:
-                getActionBar().setSelectedNavigationItem(1);
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -271,7 +269,7 @@ public class TasksActivity extends Activity implements
         String[] selectionArgs = new String[] { Long.toString(longClickedTaskId) };
         getContentResolver().update(uri, contentValues, selection, selectionArgs);
         Log.d("app", "task:" + longClickedTaskId + " associated to list:" + newListId);
-        // TODO: update count label of current navigation item.
+        // TODO: update label of current navigation item. I do not know how...
 
     }
 

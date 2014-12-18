@@ -15,13 +15,5 @@
         android:title="@string/action_delete_all_tasks"
         android:orderInCategory="300"
         android:showAsAction="never" />
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="400"
-        android:showAsAction="never" />
-    <item android:id="@+id/action_test"
-        android:title="テスト"
-        android:orderInCategory="500"
-        android:showAsAction="never" />
 
 </menu>
